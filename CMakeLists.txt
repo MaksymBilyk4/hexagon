@@ -17,7 +17,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fmt)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(hexagon main.cpp)
+add_executable(hexagon main.cpp
+        utils/EventHandler.cpp
+)
 
 target_link_libraries(hexagon sfml-graphics)
 target_link_libraries(hexagon fmt)
