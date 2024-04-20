@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(hexagon)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -19,6 +19,9 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(hexagon main.cpp
         utils/EventHandler.cpp
+        layout/models/LayoutCircle.cpp
+        utils/RandomGenerator.cpp
+        layout/utils/LayoutBackgroundGenerator.cpp
 )
 
 target_link_libraries(hexagon sfml-graphics)

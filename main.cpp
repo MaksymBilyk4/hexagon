@@ -1,11 +1,19 @@
 #include <SFML/Graphics.hpp>
-#include "utils/EventHandler.h"
+#include <iostream>
+
+#include "layout/models/LayoutCircle.hpp"
+#include "layout/utils/LayoutBackgroundGenerator.hpp"
+#include "utils/EventHandler.hpp"
 
 int main() {
 
-    auto window = sf::RenderWindow(sf::VideoMode(1000, 800), "Hexagon", sf::Style::Default);
+    auto window = sf::RenderWindow(sf::VideoMode(1200, 800), "Hexxagon", sf::Style::Default);
+    window.setFramerateLimit(60);
 
     auto eventHandler = EventHandler();
+
+    auto layoutBackgroundGenerator = LayoutBackgroundGenerator();
+    layoutBackgroundGenerator.generate(window);
 
     while (window.isOpen()) {
 
@@ -13,7 +21,10 @@ int main() {
         while (window.pollEvent(event))
             eventHandler.handle_event(event, window);
 
-        window.clear();
+        window.clear(sf::Color::Black);
+
+        layoutBackgroundGenerator.drawBackground(window);
+
         window.display();
     }
 

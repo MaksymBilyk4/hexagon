@@ -1,6 +1,6 @@
-#include "EventHandler.h"
-
 #include <fmt/core.h>
+
+#include "EventHandler.hpp"
 
 auto EventHandler::close_window(sf::Window &window) -> void {
     fmt::println("Window closed");
