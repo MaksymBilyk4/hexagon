@@ -19,9 +19,12 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(hexagon main.cpp
         utils/EventHandler.cpp
-        layout/models/LayoutCircle.cpp
+        layout/figures/LayoutCircle.cpp
         utils/RandomGenerator.cpp
-        layout/utils/LayoutBackgroundGenerator.cpp
+        layout/utils/LayoutController.cpp
+        layout/components/Modal.cpp
+        layout/components/Button.cpp
+        layout/utils/LayoutConstructor.cpp
 )
 
 target_link_libraries(hexagon sfml-graphics)

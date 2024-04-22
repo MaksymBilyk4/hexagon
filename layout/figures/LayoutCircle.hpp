@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "fmt/format.h"
 
 struct LayoutCircle {
 
@@ -13,7 +12,5 @@ struct LayoutCircle {
 
     LayoutCircle(sf::Vector2f position, sf::Vector2f velocity, float radius, float depth);
     LayoutCircle(sf::Vector2f position, sf::Vector2f velocity, float radius, float depth, sf::Color color);
-
-    auto format_as(LayoutCircle c) -> std::string;
 
 };

@@ -4,7 +4,6 @@
 
 struct RandomGenerator {
 
-
     RandomGenerator();
 
     auto generate(int low, int high) -> int;

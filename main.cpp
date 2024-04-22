@@ -1,19 +1,22 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#include "layout/models/LayoutCircle.hpp"
-#include "layout/utils/LayoutBackgroundGenerator.hpp"
+#include "layout/components/Button.hpp"
+#include "layout/figures/LayoutCircle.hpp"
+#include "layout/utils/LayoutController.hpp"
 #include "utils/EventHandler.hpp"
+#include "layout/components/Modal.hpp"
 
 int main() {
 
-    auto window = sf::RenderWindow(sf::VideoMode(1200, 800), "Hexxagon", sf::Style::Default);
+    auto window = sf::RenderWindow(sf::VideoMode(1400, 1000), "Hexxagon", sf::Style::Default);
     window.setFramerateLimit(60);
 
     auto eventHandler = EventHandler();
 
-    auto layoutBackgroundGenerator = LayoutBackgroundGenerator();
-    layoutBackgroundGenerator.generate(window);
+    auto layoutController = LayoutController(window, 50);
+    layoutController.init();
+
 
     while (window.isOpen()) {
 
@@ -23,7 +26,9 @@ int main() {
 
         window.clear(sf::Color::Black);
 
-        layoutBackgroundGenerator.drawBackground(window);
+        LayoutController::drawBackground(window);
+        Modal::drawModals(window);
+        Button::drawButtons(window);
 
         window.display();
     }
