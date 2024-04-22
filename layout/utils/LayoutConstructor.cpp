@@ -2,8 +2,7 @@
 #include <fmt/core.h>
 
 #include "./LayoutConstructor.hpp"
-#include "../../utils/font/FontHolder.hpp"
-sf::Font LayoutConstructor::sixtyFourRegular = sf::Font();
+#include "../components/TextWrapper.hpp"
 
 auto LayoutConstructor::makeMainModal(sf::RenderWindow &window) -> Modal {
     auto mainModal = Modal(window, 950, 750);
@@ -11,6 +10,11 @@ auto LayoutConstructor::makeMainModal(sf::RenderWindow &window) -> Modal {
     auto bottomGradient = sf::Color(75, 0, 130, 150);
     mainModal.setVerticalGradient(topGradient, bottomGradient);
     mainModal.show();
+
+    auto headerText = TextWrapper("Hexxagon", sf::Color::White, Fonts::SIXTY_FOUR_REGULAR_FONT, 60);
+    headerText.centerHorizontalAxis(mainModal.getPosition().x, mainModal.getSize().x, mainModal.getPosition().y + 50);
+    headerText.show();
+
     return mainModal;
 }
 
@@ -27,9 +31,4 @@ auto LayoutConstructor::makeStartGameButton(sf::RenderWindow &window) -> Button 
     startGameButton.show();
 
     return startGameButton;
-}
-
-auto LayoutConstructor::mainText() -> sf::Text {
-    auto text = sf::Text("Hello world", FontHolder::getFont(Fonts::SIXTY_FOUR_REGULAR_FONT), 20);
-    return text;
 }

@@ -3,6 +3,7 @@
 
 #include "./LayoutController.hpp"
 #include "LayoutConstructor.hpp"
+#include "../../utils/Text.hpp"
 
 RandomGenerator LayoutController::random = RandomGenerator();
 std::vector<LayoutCircle> LayoutController::figures;
@@ -51,8 +52,9 @@ auto LayoutController::drawBackground(sf::RenderWindow &window) -> void {
 }
 
 auto LayoutController::init() -> void {
-    LayoutConstructor::makeStartGameButton(globalWindow);
     LayoutConstructor::makeMainModal(globalWindow);
+    LayoutConstructor::makeStartGameButton(globalWindow);
+
     generateFigures();
 }
 

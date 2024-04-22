@@ -5,6 +5,7 @@
 
 #include "../../utils/font/FontHolder.hpp"
 #include "./Button.hpp"
+#include "../../utils/Text.hpp"
 
 std::vector<Button> Button::buttons;
 
@@ -170,10 +171,7 @@ auto Button::show() -> void {
     auto buttonPos = buttonBase.getPosition();
     auto buttonSize = buttonBase.getSize();
 
-    auto textBounds = text.getGlobalBounds();
-
-    // centering text inside button
-    text.setPosition({(buttonPos.x + (buttonSize.x / 2)) - textBounds.width / 2, (buttonPos.y + buttonSize.y / 3) - (textBounds.height / 2)});
+    Text::center(buttonPos, buttonSize, text);
 
     buttons.push_back(*this);
 }

@@ -1,12 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+#include "layout/components/Modal.hpp"
 #include "layout/components/Button.hpp"
+#include "layout/components/TextWrapper.hpp"
 #include "layout/figures/LayoutCircle.hpp"
 #include "layout/utils/LayoutController.hpp"
 #include "utils/EventHandler.hpp"
-#include "layout/components/Modal.hpp"
-#include "layout/utils/LayoutConstructor.hpp"
 #include "utils/font/FontHolder.hpp"
 
 int main() {
@@ -21,11 +21,6 @@ int main() {
     layoutController.init();
 
 
-    auto t = LayoutConstructor::mainText();
-//    t.setFont(FontHolder::getFont(Fonts::SIXTY_FOUR_REGULAR_FONT));
-//    t.setPosition({200, 200});
-//    t.setFillColor(sf::Color::Red);
-
     while (window.isOpen()) {
 
         auto event = sf::Event();
@@ -35,10 +30,10 @@ int main() {
         window.clear(sf::Color::Black);
 
         LayoutController::drawBackground(window);
+
         Modal::drawModals(window);
         Button::drawButtons(window);
-
-//        window.draw(t);
+        TextWrapper::drawTextWrappers(window);
 
         window.display();
     }

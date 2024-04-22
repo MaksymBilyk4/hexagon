@@ -10,8 +10,4 @@ struct LayoutConstructor {
 
     static auto makeStartGameButton(sf::RenderWindow &window) -> Button;
 
-    static auto mainText() -> sf::Text;
-
-    static sf::Font sixtyFourRegular;
-
 };

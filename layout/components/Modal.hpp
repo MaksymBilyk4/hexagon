@@ -12,6 +12,10 @@ struct Modal {
 
     auto getIsOpen() -> bool;
 
+    auto getPosition() -> sf::Vector2f;
+
+    auto getSize() -> sf::Vector2f;
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto setIsOpen(bool state) -> void;

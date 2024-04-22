@@ -26,6 +26,8 @@ add_executable(hexagon main.cpp
         layout/components/Button.cpp
         layout/utils/LayoutConstructor.cpp
         utils/font/FontHolder.cpp
+        utils/Text.cpp
+        layout/components/TextWrapper.cpp
 )
 
 target_link_libraries(hexagon sfml-graphics)

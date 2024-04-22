@@ -28,6 +28,14 @@ auto Modal::getIsOpen() -> bool {
     return isOpen;
 }
 
+auto Modal::getPosition() -> sf::Vector2f {
+    return modalBase[0].position;
+}
+
+auto Modal::getSize() -> sf::Vector2f {
+    return {modalBase[1].position.x - modalBase[0].position.x, modalBase[2].position.y - modalBase[1].position.y};
+}
+
 auto Modal::setIsOpen(bool state) -> void {
     isOpen = state;
 }
