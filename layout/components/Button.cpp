@@ -1,12 +1,12 @@
-#include "SFML/Graphics.hpp"
+#include <SFML/Graphics.hpp>
 #include <string>
-#include "fmt/core.h"
+#include <fmt/core.h>
 #include <functional>
 
+#include "../../utils/font/FontHolder.hpp"
 #include "./Button.hpp"
 
 std::vector<Button> Button::buttons;
-sf::Font Button::font;
 
 Button::Button(sf::Vector2f size, sf::Vector2f position, sf::Color innerColor, sf::Color borderColor, float borderWidth,
                std::string buttonText, sf::Color textColor)
@@ -188,9 +188,8 @@ auto Button::hide() -> void {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 auto Button::initButtonText(sf::Text& text, std::string &buttonText, int characterSize, sf::Color color) -> void {
-    font.loadFromFile("/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/fonts/Roboto-Medium.ttf");
     text.setString(buttonText);
-    text.setFont(font);
+    text.setFont(FontHolder::getFont(Fonts::ROBOTO_MEDIUM_FONT));
     text.setCharacterSize(characterSize);
     text.setFillColor(color);
 }

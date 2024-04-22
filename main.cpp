@@ -6,17 +6,25 @@
 #include "layout/utils/LayoutController.hpp"
 #include "utils/EventHandler.hpp"
 #include "layout/components/Modal.hpp"
+#include "layout/utils/LayoutConstructor.hpp"
+#include "utils/font/FontHolder.hpp"
 
 int main() {
 
     auto window = sf::RenderWindow(sf::VideoMode(1400, 1000), "Hexxagon", sf::Style::Default);
     window.setFramerateLimit(60);
 
+    auto fontHolder = FontHolder();
     auto eventHandler = EventHandler();
 
     auto layoutController = LayoutController(window, 50);
     layoutController.init();
 
+
+    auto t = LayoutConstructor::mainText();
+//    t.setFont(FontHolder::getFont(Fonts::SIXTY_FOUR_REGULAR_FONT));
+//    t.setPosition({200, 200});
+//    t.setFillColor(sf::Color::Red);
 
     while (window.isOpen()) {
 
@@ -29,6 +37,8 @@ int main() {
         LayoutController::drawBackground(window);
         Modal::drawModals(window);
         Button::drawButtons(window);
+
+//        window.draw(t);
 
         window.display();
     }

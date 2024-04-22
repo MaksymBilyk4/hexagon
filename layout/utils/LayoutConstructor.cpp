@@ -1,6 +1,9 @@
 #include <SFML/Graphics.hpp>
 #include <fmt/core.h>
+
 #include "./LayoutConstructor.hpp"
+#include "../../utils/font/FontHolder.hpp"
+sf::Font LayoutConstructor::sixtyFourRegular = sf::Font();
 
 auto LayoutConstructor::makeMainModal(sf::RenderWindow &window) -> Modal {
     auto mainModal = Modal(window, 950, 750);
@@ -24,4 +27,9 @@ auto LayoutConstructor::makeStartGameButton(sf::RenderWindow &window) -> Button 
     startGameButton.show();
 
     return startGameButton;
+}
+
+auto LayoutConstructor::mainText() -> sf::Text {
+    auto text = sf::Text("Hello world", FontHolder::getFont(Fonts::SIXTY_FOUR_REGULAR_FONT), 20);
+    return text;
 }

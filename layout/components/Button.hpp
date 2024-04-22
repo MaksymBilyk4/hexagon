@@ -74,7 +74,6 @@ struct Button {
 
 private:
     static std::vector<Button> buttons;
-    static sf::Font font;
 
     std::function<void()> onClickHandler;
 
