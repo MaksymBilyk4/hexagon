@@ -27,7 +27,7 @@ auto EventHandler::mouse_click(sf::Window &window) -> void {
 }
 
 
-auto EventHandler::handle_event(sf::Event &event, sf::Window &window) -> void {
+auto EventHandler::handle_event(sf::Event const &event, sf::Window &window) -> void {
 
     switch (event.type) {
         case sf::Event::Closed: // window closing

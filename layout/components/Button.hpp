@@ -1,41 +1,42 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
+#include "TextWrapper.hpp"
 #include <vector>
 #include <string>
 #include <functional>
 
 struct Button {
 
-    Button(sf::Vector2f size, sf::Vector2f position, sf::Color innerColor, sf::Color borderColor, float borderWidth,
-           std::string buttonText, sf::Color textColor);
+    Button(sf::Vector2f const& size, sf::Vector2f const& position, sf::Color const& innerColor, sf::Color const& borderColor, float borderWidth,
+           std::string const& buttonText, sf::Color const& textColor);
 
-    Button(sf::Vector2f size, sf::Color innerColor, sf::Color borderColor, float borderWidth, std::string buttonText,
-           sf::Color textColor);
+    Button(sf::Vector2f const& size, sf::Color const& innerColor, sf::Color const& borderColor, float borderWidth, std::string const& buttonText,
+           sf::Color const& textColor);
 
-    Button(sf::Vector2f size, std::string buttonText);
+    Button(sf::Vector2f const& size, std::string const& buttonText);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto setSize(sf::Vector2f size) -> void;
+    auto setSize(sf::Vector2f const& size) -> void;
 
-    auto setPosition(sf::Vector2f position) -> void;
+    auto setPosition(sf::Vector2f const& position) -> void;
 
-    auto setInnerColor(sf::Color color) -> void;
+    auto setInnerColor(sf::Color const& color) -> void;
 
-    auto setBorderColor(sf::Color color) -> void;
+    auto setBorderColor(sf::Color const& color) -> void;
 
     auto setBorderWidth(float borderWidth) -> void;
 
-    auto setHoverInnerColor(sf::Color color) -> void;
+    auto setHoverInnerColor(sf::Color const& color) -> void;
 
-    auto setHoverBorderColor(sf::Color color) -> void;
+    auto setHoverBorderColor(sf::Color const& color) -> void;
 
-    auto setTextColor(sf::Color color) -> void;
+    auto setTextColor(sf::Color const& color) -> void;
 
     auto setFontSize(int size) -> void;
 
-    auto setFont(sf::Font &font) -> void;
+    auto setFont(Fonts const& font) -> void;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,13 +56,13 @@ struct Button {
 
     static auto drawButtons(sf::RenderWindow &window) -> void;
 
-    static auto catchOnMouseOver(sf::Vector2i &mousePos) -> void;
+    static auto catchOnMouseOver(sf::Vector2i const &mousePos) -> void;
 
-    static auto catchOnMouseClick(sf::Vector2i &mousePos) -> void;
+    static auto catchOnMouseClick(sf::Vector2i const &mousePos) -> void;
 
-    auto isMouseOver(sf::Vector2i &mousePos) -> bool;
+    auto isMouseOver(sf::Vector2i const &mousePos) -> bool;
 
-    auto onClick(std::function<void()> handler) -> void;
+    auto onClick(std::function<void()> const& handler) -> void;
 
     auto hover() -> void;
 
@@ -78,7 +79,7 @@ private:
     std::function<void()> onClickHandler;
 
     sf::RectangleShape buttonBase;
-    sf::Text text;
+    TextWrapper buttonText;
 
     sf::Color hoverInnerColor;
     sf::Color hoverBorderColor;
@@ -86,6 +87,6 @@ private:
     sf::Color innerColorCpy;
     sf::Color borderColorCpy;
 
-    static auto initButton(sf::RectangleShape& buttonBase, sf::Vector2f& size, sf::Vector2f pos, sf::Color innerColor, sf::Color borderColor, float borderWidth) -> void;
-    static auto initButtonText(sf::Text& text, std::string& buttonText, int characterSize, sf::Color color) -> void;
+    auto initButtonText(std::string const& t, sf::Color const& color, Fonts const& font, int fontSize) -> void;
+    auto initButton(sf::Vector2f const& size, sf::Vector2f const& pos, sf::Color const& innerColor, sf::Color const& borderColor, float borderWidth) -> void;
 };

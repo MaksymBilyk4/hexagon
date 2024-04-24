@@ -2,7 +2,6 @@
 #include <fmt/core.h>
 
 #include "./LayoutConstructor.hpp"
-#include "../components/TextWrapper.hpp"
 
 auto LayoutConstructor::makeMainModal(sf::RenderWindow &window) -> Modal {
     auto mainModal = Modal(window, 950, 750);

@@ -3,17 +3,14 @@
 
 #include "./LayoutController.hpp"
 #include "LayoutConstructor.hpp"
-#include "../../utils/Text.hpp"
 
 RandomGenerator LayoutController::random = RandomGenerator();
-std::vector<LayoutCircle> LayoutController::figures;
+std::vector<Circle> LayoutController::figures;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LayoutController::LayoutController(
-        sf::RenderWindow &window,
-        int figureCount,
-        sf::Color figureColor
+        sf::RenderWindow &window, int figureCount, sf::Color const &figureColor
 ) :
         figureCount(figureCount),
         figureColor(figureColor),
@@ -33,7 +30,7 @@ LayoutController::LayoutController(sf::RenderWindow &window) :
 
 auto LayoutController::drawBackground(sf::RenderWindow &window) -> void {
 
-    auto maxRadiusCircle = std::ranges::max(figures, {}, [](LayoutCircle lc) -> float { return lc.radius; });
+    auto maxRadiusCircle = std::ranges::max(figures, {}, [](Circle lc) -> float { return lc.radius; });
 
     for (auto &lc: figures) {
         lc.position.x += lc.velocity.x;
@@ -76,7 +73,7 @@ auto LayoutController::generateFigures() -> void {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-auto LayoutController::setFigureColor(sf::Color color) -> void {
+auto LayoutController::setFigureColor(sf::Color const& color) -> void {
     figureColor = color;
 }
 

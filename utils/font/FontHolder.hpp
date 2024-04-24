@@ -7,7 +7,7 @@ struct FontHolder {
 
     FontHolder();
 
-    static auto getFont(Fonts font) -> sf::Font&;
+    static auto getFont(Fonts const& font) -> sf::Font&;
 
 private:
     static sf::Font ROBOTO_MEDIUM;

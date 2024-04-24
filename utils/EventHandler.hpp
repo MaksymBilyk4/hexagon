@@ -5,7 +5,7 @@
 
 struct EventHandler {
 
-    auto handle_event(sf::Event &event, sf::Window &window) -> void;
+    auto handle_event(sf::Event const &event, sf::Window &window) -> void;
 
 private:
 

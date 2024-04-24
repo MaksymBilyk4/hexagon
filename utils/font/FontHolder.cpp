@@ -10,7 +10,7 @@ FontHolder::FontHolder() {
     SIXTY_FOUR_REGULAR.loadFromFile("/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/fonts/Sixtyfour-Regular.ttf");
 }
 
-auto FontHolder::getFont(Fonts font) -> sf::Font& {
+auto FontHolder::getFont(Fonts const& font) -> sf::Font& {
     switch (font) {
         case ROBOTO_REGULAR_FONT:
             return ROBOTO_REGULAR;

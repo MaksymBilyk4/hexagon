@@ -4,7 +4,7 @@
 #include "layout/components/Modal.hpp"
 #include "layout/components/Button.hpp"
 #include "layout/components/TextWrapper.hpp"
-#include "layout/figures/LayoutCircle.hpp"
+#include "layout/figures/Circle.hpp"
 #include "layout/utils/LayoutController.hpp"
 #include "utils/EventHandler.hpp"
 #include "utils/font/FontHolder.hpp"
@@ -19,7 +19,6 @@ int main() {
 
     auto layoutController = LayoutController(window, 50);
     layoutController.init();
-
 
     while (window.isOpen()) {
 

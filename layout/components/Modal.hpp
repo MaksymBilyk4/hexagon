@@ -10,15 +10,11 @@ struct Modal {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto getIsOpen() -> bool;
-
     auto getPosition() -> sf::Vector2f;
 
     auto getSize() -> sf::Vector2f;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    auto setIsOpen(bool state) -> void;
 
     auto setVerticalGradient(sf::Color& upperColor, sf::Color& bottomColor) -> void;
 
@@ -39,5 +35,4 @@ private:
     static std::vector<Modal> modals;
 
     sf::VertexArray modalBase;
-    bool isOpen;
 };

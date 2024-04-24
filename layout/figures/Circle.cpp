@@ -1,7 +1,7 @@
 #include "SFML/Graphics.hpp"
-#include "LayoutCircle.hpp"
+#include "Circle.hpp"
 
-LayoutCircle::LayoutCircle(
+Circle::Circle(
         sf::Vector2f position,
         sf::Vector2f velocity,
         float radius,
@@ -12,7 +12,7 @@ LayoutCircle::LayoutCircle(
         radius(radius),
         depth(depth) {}
 
-LayoutCircle::LayoutCircle(
+Circle::Circle(
         sf::Vector2f position,
         sf::Vector2f velocity,
         float radius,

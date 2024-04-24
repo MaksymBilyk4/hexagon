@@ -2,7 +2,7 @@
 
 #include "SFML/Graphics.hpp"
 
-struct LayoutCircle {
+struct Circle {
 
     sf::Vector2f position; // position
     sf::Vector2f velocity; // movement speed
@@ -10,7 +10,7 @@ struct LayoutCircle {
     float depth; // for '3d'
     sf::Color circleColor;
 
-    LayoutCircle(sf::Vector2f position, sf::Vector2f velocity, float radius, float depth);
-    LayoutCircle(sf::Vector2f position, sf::Vector2f velocity, float radius, float depth, sf::Color color);
+    Circle(sf::Vector2f position, sf::Vector2f velocity, float radius, float depth);
+    Circle(sf::Vector2f position, sf::Vector2f velocity, float radius, float depth, sf::Color color);
 
 };

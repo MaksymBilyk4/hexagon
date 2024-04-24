@@ -5,62 +5,62 @@
 
 #include "../../utils/font/FontHolder.hpp"
 #include "./Button.hpp"
-#include "../../utils/Text.hpp"
 
 std::vector<Button> Button::buttons;
 
-Button::Button(sf::Vector2f size, sf::Vector2f position, sf::Color innerColor, sf::Color borderColor, float borderWidth,
-               std::string buttonText, sf::Color textColor)
+Button::Button(sf::Vector2f const &size, sf::Vector2f const &position, sf::Color const &innerColor,
+               sf::Color const &borderColor, float borderWidth,
+               std::string const &buttonText, sf::Color const &textColor)
         : innerColorCpy(innerColor), borderColorCpy(borderColor) {
 
-
-    Button::initButton(buttonBase, size, position, innerColor, borderColor, borderWidth);
+    Button::initButton(size, position, innerColor, borderColor, borderWidth);
 
     hoverInnerColor = sf::Color(128, 128, 128);
     hoverBorderColor = sf::Color(255, 255, 255);
 
-    Button::initButtonText(text, buttonText, 20, textColor);
+    initButtonText(buttonText, textColor, Fonts::ROBOTO_REGULAR_FONT, 20);
 }
 
-Button::Button(sf::Vector2f size, sf::Color innerColor, sf::Color borderColor, float borderWidth,
-               std::string buttonText, sf::Color textColor) :
+Button::Button(sf::Vector2f const &size, sf::Color const &innerColor, sf::Color const &borderColor, float borderWidth,
+               std::string const &buttonText,
+               sf::Color const &textColor) :
         innerColorCpy(innerColor), borderColorCpy(borderColor) {
 
-    Button::initButton(buttonBase, size, {0,0}, innerColor, borderColor, borderWidth);
+    Button::initButton(size, {0, 0}, innerColor, borderColor, borderWidth);
 
     hoverInnerColor = sf::Color(128, 128, 128);
     hoverBorderColor = sf::Color(255, 255, 255);
 
-    Button::initButtonText(text, buttonText, 20, textColor);
+    initButtonText(buttonText, textColor, Fonts::ROBOTO_REGULAR_FONT, 20);
 }
 
-Button::Button(sf::Vector2f size, std::string buttonText) {
+Button::Button(sf::Vector2f const &size, std::string const &buttonText) {
     innerColorCpy = sf::Color::White;
     borderColorCpy = sf::Color::Black;
 
-    Button::initButton(buttonBase, size, {0,0}, sf::Color::White, sf::Color::Black, 3);
+    Button::initButton(size, {0, 0}, sf::Color::White, sf::Color::Black, 3);
 
     hoverInnerColor = sf::Color(128, 128, 128);
     hoverBorderColor = sf::Color(255, 255, 255);
 
-    Button::initButtonText(text, buttonText, 20, sf::Color::Black);
+    initButtonText(buttonText, sf::Color::Black, Fonts::ROBOTO_REGULAR_FONT, 20);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-auto Button::setSize(sf::Vector2f size) -> void {
+auto Button::setSize(sf::Vector2f const &size) -> void {
     buttonBase.setSize(size);
 }
 
-auto Button::setPosition(sf::Vector2f position) -> void {
+auto Button::setPosition(sf::Vector2f const &position) -> void {
     buttonBase.setPosition(position);
 }
 
-auto Button::setInnerColor(sf::Color color) -> void {
+auto Button::setInnerColor(sf::Color const &color) -> void {
     buttonBase.setFillColor(color);
     innerColorCpy = color;
 }
 
-auto Button::setBorderColor(sf::Color color) -> void {
+auto Button::setBorderColor(sf::Color const &color) -> void {
     buttonBase.setOutlineColor(color);
     borderColorCpy = color;
 }
@@ -69,24 +69,24 @@ auto Button::setBorderWidth(float borderWidth) -> void {
     buttonBase.setOutlineThickness(borderWidth);
 }
 
-auto Button::setHoverInnerColor(sf::Color color) -> void {
+auto Button::setHoverInnerColor(sf::Color const &color) -> void {
     hoverInnerColor = color;
 }
 
-auto Button::setHoverBorderColor(sf::Color color) -> void {
+auto Button::setHoverBorderColor(sf::Color const &color) -> void {
     hoverBorderColor = color;
 }
 
-auto Button::setTextColor(sf::Color color) -> void {
-    text.setFillColor(color);
+auto Button::setTextColor(sf::Color const &color) -> void {
+    buttonText.setColor(color);
 }
 
 auto Button::setFontSize(int size) -> void {
-    text.setCharacterSize(size);
+    buttonText.setFontSize(size);
 }
 
-auto Button::setFont(sf::Font &font) -> void {
-    text.setFont(font);
+auto Button::setFont(Fonts const &font) -> void {
+    buttonText.setFont(font);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,11 +119,10 @@ auto Button::getBorderHoverColor() -> sf::Color {
 auto Button::drawButtons(sf::RenderWindow &window) -> void {
     for (Button &btn: buttons) {
         window.draw(btn.buttonBase);
-        window.draw(btn.text);
     }
 }
 
-auto Button::catchOnMouseOver(sf::Vector2i &mousePos) -> void {
+auto Button::catchOnMouseOver(sf::Vector2i const &mousePos) -> void {
     for (Button &btn: buttons) {
         if (btn.isMouseOver(mousePos)) {
             btn.hover();
@@ -131,7 +130,7 @@ auto Button::catchOnMouseOver(sf::Vector2i &mousePos) -> void {
     }
 }
 
-auto Button::catchOnMouseClick(sf::Vector2i &mousePos) -> void {
+auto Button::catchOnMouseClick(sf::Vector2i const &mousePos) -> void {
     for (Button &btn: buttons) {
         if (btn.isMouseOver(mousePos)) {
             if (btn.onClickHandler) btn.onClickHandler();
@@ -140,7 +139,7 @@ auto Button::catchOnMouseClick(sf::Vector2i &mousePos) -> void {
     }
 }
 
-auto Button::isMouseOver(sf::Vector2i &mousePos) -> bool {
+auto Button::isMouseOver(sf::Vector2i const &mousePos) -> bool {
     if (
             (mousePos.x >= buttonBase.getPosition().x &&
              mousePos.x <= buttonBase.getPosition().x + buttonBase.getSize().x) &&
@@ -152,7 +151,7 @@ auto Button::isMouseOver(sf::Vector2i &mousePos) -> bool {
     return false;
 }
 
-auto Button::onClick(std::function<void()> handler) -> void {
+auto Button::onClick(std::function<void()> const& handler) -> void {
     onClickHandler = handler;
 }
 
@@ -167,11 +166,8 @@ auto Button::unhover() -> void {
 }
 
 auto Button::show() -> void {
-
-    auto buttonPos = buttonBase.getPosition();
-    auto buttonSize = buttonBase.getSize();
-
-    Text::center(buttonPos, buttonSize, text);
+    buttonText.centerBothAxis(buttonBase.getPosition(), buttonBase.getSize());
+    buttonText.show();
 
     buttons.push_back(*this);
 }
@@ -181,18 +177,17 @@ auto Button::hide() -> void {
         return &btn == this;
     });
 
+    buttonText.hide();
     buttons.erase(buttonIterator);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-auto Button::initButtonText(sf::Text& text, std::string &buttonText, int characterSize, sf::Color color) -> void {
-    text.setString(buttonText);
-    text.setFont(FontHolder::getFont(Fonts::ROBOTO_MEDIUM_FONT));
-    text.setCharacterSize(characterSize);
-    text.setFillColor(color);
+auto Button::initButtonText(std::string const &t, sf::Color const &color, Fonts const &font, int fontSize) -> void {
+    buttonText = TextWrapper(t, color, font, fontSize);
 }
 
-auto Button::initButton(sf::RectangleShape &buttonBase, sf::Vector2f &size, sf::Vector2f pos, sf::Color innerColor, sf::Color borderColor, float borderWidth) -> void {
+auto Button::initButton(sf::Vector2f const &size, sf::Vector2f const &pos, sf::Color const &innerColor,
+                        sf::Color const &borderColor, float borderWidth) -> void {
     buttonBase.setSize(size);
     buttonBase.setPosition(pos);
     buttonBase.setFillColor(innerColor);

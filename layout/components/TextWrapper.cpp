@@ -9,11 +9,17 @@
 
 std::vector<TextWrapper> TextWrapper::textWrappers;
 
-TextWrapper::TextWrapper(std::string t, sf::Color color, Fonts font, int fontSize) {
+TextWrapper::TextWrapper(std::string const& t, sf::Color const& color, Fonts const& font, int fontSize) {
     initTextProperties(t, color, font, fontSize);
 }
 
-auto TextWrapper::setPosition(sf::Vector2f position) -> void {
+TextWrapper::TextWrapper(std::string const& t) {
+    initTextProperties(t, sf::Color::Black, Fonts::ROBOTO_REGULAR_FONT, 20);
+}
+
+TextWrapper::TextWrapper() {};
+
+auto TextWrapper::setPosition(sf::Vector2f const& position) -> void {
     text.setPosition(position);
 }
 
@@ -29,9 +35,13 @@ auto TextWrapper::setLetterSpacing(float letterSpacing) -> void {
     text.setLetterSpacing(letterSpacing);
 }
 
-auto TextWrapper::centerBothAxis(sf::Vector2f parentPosition, sf::Vector2f parentSize) -> void {
+auto TextWrapper::setFont(Fonts const& font) -> void {
+    text.setFont(FontHolder::getFont(font));
+}
+
+auto TextWrapper::centerBothAxis(sf::Vector2f const& parentPosition, sf::Vector2f const& parentSize) -> void {
     text.setPosition({
-        parentPosition.x + (parentSize.x / 2) - (text.getGlobalBounds().width + text.getLetterSpacing() * static_cast<float >(text.getString().getSize() * text.getCharacterSize())) / 2,
+        parentPosition.x + (parentSize.x / 2) - text.getGlobalBounds().width  / 2,
         parentPosition.y + (parentSize.y / 3) - text.getGlobalBounds().height / 2
     });
 }
@@ -62,7 +72,7 @@ auto TextWrapper::drawTextWrappers(sf::RenderWindow &window) -> void {
     }
 }
 
-auto TextWrapper::initTextProperties(std::string &t, sf::Color &color, Fonts &font, int fontSize) -> void {
+auto TextWrapper::initTextProperties(std::string const &t, sf::Color const &color, Fonts const &font, int fontSize) -> void {
     text.setFont(FontHolder::getFont(font));
     text.setFillColor(color);
     text.setCharacterSize(fontSize);

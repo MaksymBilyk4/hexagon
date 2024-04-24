@@ -19,14 +19,13 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(hexagon main.cpp
         utils/EventHandler.cpp
-        layout/figures/LayoutCircle.cpp
+        layout/figures/Circle.cpp
         utils/RandomGenerator.cpp
         layout/utils/LayoutController.cpp
         layout/components/Modal.cpp
         layout/components/Button.cpp
         layout/utils/LayoutConstructor.cpp
         utils/font/FontHolder.cpp
-        utils/Text.cpp
         layout/components/TextWrapper.cpp
 )
 
