@@ -5,6 +5,7 @@
 
 #include "../../utils/font/FontHolder.hpp"
 #include "./Button.hpp"
+#include "../../utils/cursor/CursorHolder.hpp"
 
 std::vector<Button> Button::buttons;
 
@@ -122,11 +123,18 @@ auto Button::drawButtons(sf::RenderWindow &window) -> void {
     }
 }
 
-auto Button::catchOnMouseOver(sf::Vector2i const &mousePos) -> void {
+auto Button::catchOnMouseOver(sf::Window &window) -> void {
+
+    auto mousePos = sf::Mouse::getPosition(window);
+
     for (Button &btn: buttons) {
         if (btn.isMouseOver(mousePos)) {
             btn.hover();
-        } else btn.unhover();
+            CursorHolder::setHandCursor(window);
+        } else {
+            btn.unhover();
+            CursorHolder::setSimpleCursor(window);
+        }
     }
 }
 
@@ -151,7 +159,7 @@ auto Button::isMouseOver(sf::Vector2i const &mousePos) -> bool {
     return false;
 }
 
-auto Button::onClick(std::function<void()> const& handler) -> void {
+auto Button::onClick(std::function<void()> const &handler) -> void {
     onClickHandler = handler;
 }
 

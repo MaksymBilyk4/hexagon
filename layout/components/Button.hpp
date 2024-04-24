@@ -56,7 +56,7 @@ struct Button {
 
     static auto drawButtons(sf::RenderWindow &window) -> void;
 
-    static auto catchOnMouseOver(sf::Vector2i const &mousePos) -> void;
+    static auto catchOnMouseOver(sf::Window &window) -> void;
 
     static auto catchOnMouseClick(sf::Vector2i const &mousePos) -> void;
 

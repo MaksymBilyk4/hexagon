@@ -27,6 +27,9 @@ add_executable(hexagon main.cpp
         layout/utils/LayoutConstructor.cpp
         utils/font/FontHolder.cpp
         layout/components/TextWrapper.cpp
+        layout/components/CheckBox.cpp
+        utils/removeFromVector.cpp
+        utils/cursor/CursorHolder.cpp
 )
 
 target_link_libraries(hexagon sfml-graphics)

@@ -17,8 +17,7 @@ auto EventHandler::resize_window(sf::Window &window) -> void {
 }
 
 auto EventHandler::mouse_move(sf::Window &window) -> void {
-    auto mousePosition = sf::Mouse::getPosition(window);
-    Button::catchOnMouseOver(mousePosition);
+    Button::catchOnMouseOver(window);
 }
 
 auto EventHandler::mouse_click(sf::Window &window) -> void {
