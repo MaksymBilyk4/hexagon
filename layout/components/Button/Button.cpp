@@ -1,11 +1,13 @@
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #include <string>
-#include <fmt/core.h>
+#include "fmt/core.h"
 #include <functional>
 
-#include "../../utils/font/FontHolder.hpp"
+#include "../../../utils/font/FontHolder.hpp"
 #include "./Button.hpp"
-#include "../../utils/cursor/CursorHolder.hpp"
+#include "../../../utils/cursor/CursorHolder.hpp"
+#include "../../../utils/ComponentUtil.hpp"
+
 
 std::vector<Button> Button::buttons;
 
@@ -126,16 +128,26 @@ auto Button::drawButtons(sf::RenderWindow &window) -> void {
 auto Button::catchOnMouseOver(sf::Window &window) -> void {
 
     auto mousePos = sf::Mouse::getPosition(window);
+    bool cursorSet = false;
 
-    for (Button &btn: buttons) {
-        if (btn.isMouseOver(mousePos)) {
+    for (Button &btn : buttons) {
+        if (btn.isMouseOver(mousePos) &&
+            (CursorHolder::getCurrentHolder() == CurrentHolder::NO_ONE ||
+             CursorHolder::getCurrentHolder() == CurrentHolder::BUTTON)) {
             btn.hover();
             CursorHolder::setHandCursor(window);
+            CursorHolder::setCurrentHolder(CurrentHolder::BUTTON);
+            cursorSet = true;
         } else {
             btn.unhover();
-            CursorHolder::setSimpleCursor(window);
         }
     }
+
+    if (!cursorSet && CursorHolder::getCurrentHolder() == CurrentHolder::BUTTON) {
+        CursorHolder::setSimpleCursor(window);
+        CursorHolder::setCurrentHolder(CurrentHolder::NO_ONE);
+    }
+
 }
 
 auto Button::catchOnMouseClick(sf::Vector2i const &mousePos) -> void {
@@ -148,15 +160,7 @@ auto Button::catchOnMouseClick(sf::Vector2i const &mousePos) -> void {
 }
 
 auto Button::isMouseOver(sf::Vector2i const &mousePos) -> bool {
-    if (
-            (mousePos.x >= buttonBase.getPosition().x &&
-             mousePos.x <= buttonBase.getPosition().x + buttonBase.getSize().x) &&
-            (mousePos.y >= buttonBase.getPosition().y &&
-             mousePos.y <= buttonBase.getPosition().y + buttonBase.getSize().y)) {
-        return true;
-    }
-
-    return false;
+    return ComponentUtil::isMouseOver(buttonBase, mousePos);
 }
 
 auto Button::onClick(std::function<void()> const &handler) -> void {
@@ -176,8 +180,8 @@ auto Button::unhover() -> void {
 auto Button::show() -> void {
     buttonText.centerBothAxis(buttonBase.getPosition(), buttonBase.getSize());
     buttonText.show();
-
     buttons.push_back(*this);
+//    ComponentUtil::show(Button::buttons, *this);
 }
 
 auto Button::hide() -> void {

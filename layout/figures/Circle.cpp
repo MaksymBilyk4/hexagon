@@ -4,24 +4,20 @@
 Circle::Circle(
         sf::Vector2f position,
         sf::Vector2f velocity,
-        float radius,
-        float depth
+        float radius
 ) :
         position(position),
         velocity(velocity),
-        radius(radius),
-        depth(depth) {}
+        radius(radius) {}
 
 Circle::Circle(
         sf::Vector2f position,
         sf::Vector2f velocity,
         float radius,
-        float depth,
         sf::Color color
 ) :
         position(position),
         velocity(velocity),
         radius(radius),
-        depth(depth),
         circleColor(color) {}
 

@@ -19,7 +19,7 @@ struct LayoutController {
 
     static auto drawBackground(sf::RenderWindow &window) -> void;
 
-    auto init() -> void;
+    auto initGameWindow() -> void;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

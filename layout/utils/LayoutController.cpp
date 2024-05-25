@@ -30,29 +30,23 @@ LayoutController::LayoutController(sf::RenderWindow &window) :
 
 auto LayoutController::drawBackground(sf::RenderWindow &window) -> void {
 
-    auto maxRadiusCircle = std::ranges::max(figures, {}, [](Circle lc) -> float { return lc.radius; });
 
-    for (auto &lc: figures) {
-        lc.position.x += lc.velocity.x;
+    auto maxRadiusCircle = std::ranges::max(figures, {}, [](Circle &lc) -> float { return lc.radius; });
 
-        if (lc.position.x < -lc.radius) {
-            lc.position.x = window.getSize().x + maxRadiusCircle.radius;
-            lc.position.y = static_cast<float> (random.generate(30, window.getSize().y - 30));
+    for (auto &layoutCircle: figures) {
+        layoutCircle.position.x += layoutCircle.velocity.x;
+
+        if (layoutCircle.position.x < -layoutCircle.radius) {
+            layoutCircle.position.x = window.getSize().x + maxRadiusCircle.radius;
+            layoutCircle.position.y = static_cast<float> (random.generate(30, window.getSize().y - 30));
         }
 
-        auto shape = sf::CircleShape(lc.radius);
-        shape.setFillColor(lc.circleColor);
-        shape.setPosition(lc.position);
+        auto shape = sf::CircleShape(layoutCircle.radius);
+        shape.setFillColor(layoutCircle.circleColor);
+        shape.setPosition(layoutCircle.position);
         window.draw(shape);
     }
 
-}
-
-auto LayoutController::init() -> void {
-    LayoutConstructor::makeMainModal(globalWindow);
-    LayoutConstructor::makeStartGameButton(globalWindow);
-
-    generateFigures();
 }
 
 auto LayoutController::generateFigures() -> void {
@@ -66,14 +60,22 @@ auto LayoutController::generateFigures() -> void {
         float xVelocity = speedModifier * (static_cast<float>(0 - random.generate(0, 100)) * 0.1f);
         float radius = 8.f * speedModifier;
 
-        figures.emplace_back(sf::Vector2f(x, y), sf::Vector2f(xVelocity, 0), radius, depth, figureColor);
+        figures.emplace_back(sf::Vector2f(x, y), sf::Vector2f(xVelocity, 0), radius, figureColor);
     }
 
 }
 
+// Game window panel to store whole components in one place and to controll them (show/hide)
+
+auto LayoutController::initGameWindow() -> void {
+    LayoutConstructor::buildHomeScreen(globalWindow);
+
+    generateFigures();
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-auto LayoutController::setFigureColor(sf::Color const& color) -> void {
+auto LayoutController::setFigureColor(sf::Color const &color) -> void {
     figureColor = color;
 }
 

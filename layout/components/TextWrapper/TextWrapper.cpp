@@ -1,10 +1,11 @@
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #include <vector>
 #include <algorithm>
-#include <fmt/core.h>
+#include "fmt/core.h"
 
 #include "./TextWrapper.hpp"
-#include "../../utils/font/FontHolder.hpp"
+#include "../../../utils/font/FontHolder.hpp"
+#include "../../../utils/ComponentUtil.hpp"
 
 
 std::vector<TextWrapper> TextWrapper::textWrappers;
@@ -19,8 +20,20 @@ TextWrapper::TextWrapper(std::string const& t) {
 
 TextWrapper::TextWrapper() {};
 
+auto TextWrapper::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
+    return ComponentUtil::isMouseOver(text.getPosition(), text.getGlobalBounds().getSize(), mousePosition);
+}
+
+auto TextWrapper::getSize() const -> sf::Vector2f {
+    return text.getGlobalBounds().getSize();
+}
+
 auto TextWrapper::setPosition(sf::Vector2f const& position) -> void {
     text.setPosition(position);
+}
+
+auto TextWrapper::setText(std::string const& t) -> void {
+    text.setString(t);
 }
 
 auto TextWrapper::setFontSize(int fontSize) -> void {
@@ -55,7 +68,7 @@ auto TextWrapper::centerHorizontalAxis(float parentX, float parentWidth, float p
 }
 
 auto TextWrapper::show() -> void {
-    textWrappers.emplace_back(*this);
+    textWrappers.push_back(*this);
 }
 
 auto TextWrapper::hide() -> void {
@@ -77,4 +90,8 @@ auto TextWrapper::initTextProperties(std::string const &t, sf::Color const &colo
     text.setFillColor(color);
     text.setCharacterSize(fontSize);
     text.setString(t);
+}
+
+auto TextWrapper::getPosition() const -> sf::Vector2f {
+    return sf::Vector2f();
 }

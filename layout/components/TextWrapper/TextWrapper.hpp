@@ -1,9 +1,9 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #include <vector>
 #include <string>
-#include "../../utils/font/Fonts.hpp"
+#include "../../../utils/font/Fonts.hpp"
 
 struct TextWrapper {
 
@@ -13,6 +13,10 @@ struct TextWrapper {
 
     TextWrapper();
 
+    auto getSize() const -> sf::Vector2f;
+
+    auto getPosition() const -> sf::Vector2f;
+
     auto setFontSize(int fontSize) -> void;
 
     auto setPosition(sf::Vector2f const& position) -> void;
@@ -20,6 +24,10 @@ struct TextWrapper {
     auto setColor(sf::Color color) -> void;
 
     auto setLetterSpacing(float letterSpacing) -> void;
+
+    auto isMouseOver(sf::Vector2i const& mousePosition) const -> bool;
+
+    auto setText(std::string const& t) -> void;
 
     auto setFont(Fonts const& font) -> void;
 
@@ -37,7 +45,6 @@ private:
 
     sf::Text text;
     static std::vector<TextWrapper> textWrappers;
-
 
     auto initTextProperties(std::string const &t, sf::Color const &color, Fonts const &font, int fontSize) -> void;
 

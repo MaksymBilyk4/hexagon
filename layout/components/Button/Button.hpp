@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "TextWrapper.hpp"
+#include "../TextWrapper/TextWrapper.hpp"
 #include <vector>
 #include <string>
 #include <functional>
@@ -72,9 +72,9 @@ struct Button {
 
     auto hide() -> void;
 
+    static std::vector<Button> buttons;
 
 private:
-    static std::vector<Button> buttons;
 
     std::function<void()> onClickHandler;
 

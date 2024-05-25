@@ -1,0 +1,4 @@
+what is undefined behaviour
+
+
+Ask about doing global class that give access to render window at any part of program
