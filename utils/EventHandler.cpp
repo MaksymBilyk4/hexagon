@@ -17,17 +17,17 @@ auto EventHandler::resize_window(sf::Window &window) -> void {
 auto EventHandler::mouse_move(sf::Window &window) -> void {
     auto mousePosition = sf::Mouse::getPosition(window);
 
-    ComponentUtil::listenOnMouseMove(ButtonVer2::buttons, mousePosition);
-    ComponentUtil::listenOnMouseMove(CheckBoxGroupVer2::groups, mousePosition);
+    ComponentUtil::listenOnMouseMove(Button::buttons, mousePosition);
+    ComponentUtil::listenOnMouseMove(CheckBoxGroup::groups, mousePosition);
 }
 
 auto EventHandler::mouse_click(sf::Window &window) -> void {
     auto mousePosition = sf::Mouse::getPosition(window);
 
-    ComponentUtil::listenOnMouseClick(ButtonVer2::buttons, mousePosition);
+    ComponentUtil::listenOnMouseClick(Button::buttons, mousePosition);
 
-    CheckBoxGroupVer2::setClickedPosition(mousePosition);
-    ComponentUtil::listenOnMouseClick(CheckBoxGroupVer2::groups, mousePosition);
+    CheckBoxGroup::setClickedPosition(mousePosition);
+    ComponentUtil::listenOnMouseClick(CheckBoxGroup::groups, mousePosition);
 }
 
 

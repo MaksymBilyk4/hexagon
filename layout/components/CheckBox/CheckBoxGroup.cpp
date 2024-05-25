@@ -1,85 +1,101 @@
-#include "CheckBoxGroup.hpp"
-#include "../../../utils/cursor/CursorHolder.hpp"
-#include <fmt/core.h>
-#include <fmt/format.h>
+#include "./CheckBoxGroup.hpp"
 
-std::vector<CheckBoxGroup *> CheckBoxGroup::groups;
+std::vector<std::unique_ptr<Component>> CheckBoxGroup::groups;
+sf::Vector2i CheckBoxGroup::clickedPosition;
 
-auto CheckBoxGroup::drawCheckBoxGroups(sf::RenderWindow &window) -> void {
-    for (auto &cbGroup: groups) {
-//        fmt::println("draw {}", fmt::ptr(cbGroup));
-        for (auto &cb: cbGroup->checkBoxGroup) {
-            cb.draw(window);
-//            fmt::println("draw cb {} {}", fmt::ptr(&cb), fmt::ptr(&cb));
-        }
-    }
+auto CheckBoxGroup::getPosition() const -> sf::Vector2f {
+    return {0, 0};
 }
 
-auto CheckBoxGroup::catchOnMouseClick(const sf::Vector2i &mousePos) -> void {
-    for (auto &group: groups) {
-        for (auto &cb: group->checkBoxGroup) {
-            if (cb.isMouseOver(mousePos) || cb.getLabel().isMouseOver(mousePos)) {
-//                fmt::println("clicked on check box");
-//                fmt::println("cur: {}, clicked: {}", fmt::ptr(group->currentActive), fmt::ptr(&cb));
-                if (group->currentActive != nullptr) group->currentActive->off();
-                group->currentActive = &cb;
-                group->currentActive->on();
-//                cb.on();
-//                fmt::println("Current active: {}", group->currentActive->getActiveContextAction());
+auto CheckBoxGroup::getSize() const -> sf::Vector2f {
+    return {0, 0};
+}
+
+auto CheckBoxGroup::getClickedPosition() const -> sf::Vector2i {
+    return clickedPosition;
+}
+
+auto CheckBoxGroup::setPosition(const sf::Vector2f &position) -> void {
+    //
+}
+
+auto CheckBoxGroup::setSize(const sf::Vector2f &size) -> void {
+    //
+}
+
+auto CheckBoxGroup::setClickedPosition(sf::Vector2i const &mousePosition) -> void {
+    clickedPosition = mousePosition;
+}
+
+auto CheckBoxGroup::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
+    for (auto const &checkBoxPtr: checkBoxGroup)
+        if (checkBoxPtr->isMouseOver(mousePosition) || checkBoxPtr->getLabel().isMouseOver(mousePosition))
+            return true;
+
+    return false;
+}
+
+auto CheckBoxGroup::onClick() -> void {
+    for (auto const &checkBoxPtr : checkBoxGroup) {
+        if (checkBoxPtr->isMouseOver(clickedPosition) || checkBoxPtr->getLabel().isMouseOver(clickedPosition)) {
+            if (checkBoxPtr != currentActive) {
+                currentActive->off();
+                currentActive = checkBoxPtr;
+                currentActive->on();
             }
         }
     }
+
 }
 
-auto CheckBoxGroup::catchOnMouseOver(sf::Window &window) -> void {
-    auto mousePos = sf::Mouse::getPosition(window);
-    bool cursorSet = false;
-
-    for (auto &group : groups) {
-        for (auto &cb : group->checkBoxGroup) {
-            if ((cb.isMouseOver(mousePos) || cb.getLabel().isMouseOver(mousePos)) &&
-                (CursorHolder::getCurrentHolder() == CurrentHolder::NO_ONE ||
-                 CursorHolder::getCurrentHolder() == CurrentHolder::CHECK_BOX)) {
-                CursorHolder::setHandCursor(window);
-                CursorHolder::setCurrentHolder(CurrentHolder::CHECK_BOX);
-                cursorSet = true;
-            }
-        }
-    }
-
-    if (!cursorSet && CursorHolder::getCurrentHolder() == CurrentHolder::CHECK_BOX) {
-        CursorHolder::setSimpleCursor(window);
-        CursorHolder::setCurrentHolder(CurrentHolder::NO_ONE);
+auto CheckBoxGroup::onMouseOver() -> void {
+    if (Cursor::getCurrentHolder() == CursorHolder::CHECK_BOX ||
+        Cursor::getCurrentHolder() == CursorHolder::NO_ONE) {
+        Cursor::setCurrentHolder(CursorHolder::CHECK_BOX);
+        Cursor::setHandCursor();
     }
 }
 
-auto CheckBoxGroup::add(CheckBox const &checkBox) -> void {
-    checkBoxGroup.push_back(checkBox);
+auto CheckBoxGroup::onMouseLeave() -> void {
+    if (Cursor::getCurrentHolder() == CursorHolder::CHECK_BOX) {
+        Cursor::setCurrentHolder(CursorHolder::NO_ONE);
+        Cursor::setSimpleCursor();
+    }
 }
 
 auto CheckBoxGroup::show() -> void {
-    groups.push_back(this);
-    currentActive = &checkBoxGroup[0];
-    currentActive->on();
+    if (!checkBoxGroup.empty()) {
+        currentActive = checkBoxGroup[0];
+        currentActive->on();
+    }
+
+    groups.push_back(std::make_unique<CheckBoxGroup>(*this));
 }
 
 auto CheckBoxGroup::hide() -> void {
-    auto existenceIterator = std::ranges::find_if(groups.begin(), groups.end(),
-                                                  [this](CheckBoxGroup const *cbg) -> bool {
-                                                      return cbg == this;
-                                                  });
+    auto groupExistenceIterator = std::find_if(
+            groups.begin(),
+            groups.end(),
+            [this](std::unique_ptr<Component> const &group) -> bool {
+                return group.get() == this;
+            }
+    );
 
-    groups.erase(existenceIterator);
+    if (groupExistenceIterator != groups.end()) {
+        groups.erase(groupExistenceIterator);
+    }
 }
 
-auto CheckBoxGroup::getActiveContext() const -> const std::string & {
-    return currentActive->getActiveContextAction();
+auto CheckBoxGroup::draw(sf::RenderWindow &renderWindow) -> void {
+    for (auto const &checkBoxPtr: checkBoxGroup)
+        checkBoxPtr->draw(renderWindow);
 }
 
-auto CheckBoxGroup::getActiveCheckBox() const -> const CheckBox * {
-    return currentActive;
+auto CheckBoxGroup::getActiveCheckBoxActionContext() const -> const std::string & {
+    return currentActive->getActionContext();
 }
 
-auto CheckBoxGroup::setDefaultActive(CheckBox &checkBox) -> void {
-    currentActive = &checkBox;
+auto CheckBoxGroup::addCheckBox(CheckBox &checkBox) -> void {
+    checkBoxGroup.push_back(&checkBox);
 }
+

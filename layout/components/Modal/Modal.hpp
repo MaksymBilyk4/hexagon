@@ -1,38 +1,41 @@
 #pragma once
 
-#include "SFML/Graphics.hpp"
-#include <vector>
+#include <memory>
+#include "../Box.hpp"
+#include "../../../utils/ComponentUtil.hpp"
 
-struct Modal {
+struct Modal : Component {
 
+    Modal(sf::RenderWindow const &renderWindow, int width, int height);
 
-    Modal(sf::Window &window, int width, int height);
+    auto getPosition() const -> sf::Vector2f override;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto getSize() const -> sf::Vector2f override;
 
-    auto getPosition() -> sf::Vector2f;
+    auto setPosition(sf::Vector2f const &position) -> void override;
 
-    auto getSize() -> sf::Vector2f;
+    auto setSize(sf::Vector2f const &size) -> void override;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto isMouseOver(const sf::Vector2i &mousePosition) const -> bool override;
 
-    auto setVerticalGradient(sf::Color& upperColor, sf::Color& bottomColor) -> void;
+    auto show() -> void override;
 
-    auto setHorizontalGradient(sf::Color& leftColor, sf::Color& rightColor) -> void;
+    auto hide() -> void override;
 
-    auto setColor(sf::Color& color) -> void;
+    auto draw(sf::RenderWindow &renderWindow) -> void override;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto setVerticalGradient(sf::Color const &upperColor, sf::Color const &bottomColor) -> void;
 
-    static auto drawModals(sf::RenderWindow& window) -> void;
+    auto setHorizontalGradient(sf::Color const &leftColor, sf::Color const &rightColor) -> void;
 
-    auto show() -> void;
+    auto setInlineColor(sf::Color const& color) -> void;
 
-    auto hide() -> void;
+    static std::vector<std::unique_ptr<Component>> modals;
 
 private:
 
-    static std::vector<Modal> modals;
-
     sf::VertexArray modalBase;
+
+    static inline int vertexCount = 4;
+
 };

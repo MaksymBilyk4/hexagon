@@ -1,9 +1,9 @@
 #include "./HomeLayoutBuilder.hpp"
 
-std::unique_ptr<ModalVer2> HomeLayoutBuilder::modal;
-std::unique_ptr<TextWrapperVer2> HomeLayoutBuilder::title;
-std::unique_ptr<ButtonVer2> HomeLayoutBuilder::button;
-std::unique_ptr<CheckBoxGroupVer2> HomeLayoutBuilder::checkBoxGroup;
+std::unique_ptr<Modal> HomeLayoutBuilder::modal;
+std::unique_ptr<TextWrapper> HomeLayoutBuilder::title;
+std::unique_ptr<Button> HomeLayoutBuilder::button;
+std::unique_ptr<CheckBoxGroup> HomeLayoutBuilder::checkBoxGroup;
 
 auto HomeLayoutBuilder::build() -> void {
     modal->show();
@@ -26,13 +26,13 @@ auto HomeLayoutBuilder::initHomeScreen(sf::RenderWindow &renderWindow) -> void {
 }
 
 auto HomeLayoutBuilder::makeMainModal(sf::RenderWindow &renderWindow) -> void {
-    auto mainModal = std::make_unique<ModalVer2>(renderWindow, 950, 750);
+    auto mainModal = std::make_unique<Modal>(renderWindow, 950, 750);
 
     auto topGradient = sf::Color(191, 64, 191, 150);
     auto bottomGradient = sf::Color(75, 0, 130, 150);
     mainModal->setVerticalGradient(topGradient, bottomGradient);
 
-    auto headerText = std::make_unique<TextWrapperVer2>();
+    auto headerText = std::make_unique<TextWrapper>();
     headerText->setText("Hexxagon");
     headerText->setColor(sf::Color::White);
     headerText->setFont(Fonts::SIXTY_FOUR_REGULAR_FONT);
@@ -45,7 +45,7 @@ auto HomeLayoutBuilder::makeMainModal(sf::RenderWindow &renderWindow) -> void {
 }
 
 auto HomeLayoutBuilder::makeStartGameButton(sf::RenderWindow &renderWindow) -> void {
-    auto startGameButton = std::make_unique<ButtonVer2>(sf::Vector2f(0, 0), sf::Vector2f(500, 50), "START GAME");
+    auto startGameButton = std::make_unique<Button>(sf::Vector2f(0, 0), sf::Vector2f(500, 50), "START GAME");
     startGameButton->setBorderColor({194, 31, 188});
     startGameButton->setHoverBorderColor({255, 0, 229});
     startGameButton->setBorderWidth(3);
@@ -59,9 +59,9 @@ auto HomeLayoutBuilder::makeStartGameButton(sf::RenderWindow &renderWindow) -> v
 }
 
 auto HomeLayoutBuilder::makeGameChoiceGroup() -> void {
-    auto group = std::make_unique<CheckBoxGroupVer2>();
-    auto cb1 = new CheckBoxVer2({390, 500}, {30, 30}, "PLAYER     vs.    COMPUTER");
-    auto cb2 = new CheckBoxVer2({390, 570}, {30, 30}, "PLAYER     vs.     PLAYER ");
+    auto group = std::make_unique<CheckBoxGroup>();
+    auto cb1 = new CheckBox({390, 500}, {30, 30}, "PLAYER     vs.    COMPUTER");
+    auto cb2 = new CheckBox({390, 570}, {30, 30}, "PLAYER     vs.     PLAYER ");
 
     cb1->setActionContext("Check Box 1");
     cb2->setActionContext("Check Box 2");

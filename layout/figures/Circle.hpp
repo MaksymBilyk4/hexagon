@@ -4,9 +4,9 @@
 
 struct Circle {
 
-    sf::Vector2f position; // position
-    sf::Vector2f velocity; // movement speed
-    float radius; // radius of circle
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    float radius;
     sf::Color circleColor;
 
     Circle(sf::Vector2f position, sf::Vector2f velocity, float radius);

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #include <vector>
 #include <memory>
 
-#include "../layout/components/Component.hpp"
+#include "../components/Component.hpp"
 
 struct Drawer {
 

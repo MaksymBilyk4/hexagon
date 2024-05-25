@@ -1,51 +1,74 @@
 #pragma once
 
-#include "SFML/Graphics.hpp"
 #include <vector>
 #include <string>
+#include <memory>
+#include <functional>
+#include "../Component.hpp"
+#include "../../../utils/ComponentUtil.hpp"
+#include "../../../utils/font/FontHolder.hpp"
 #include "../../../utils/font/Fonts.hpp"
 
-struct TextWrapper {
-
-    TextWrapper(std::string const& t, sf::Color const& color, Fonts const& font, int fontSize);
-
-    TextWrapper(std::string const& t);
+struct TextWrapper : Component {
 
     TextWrapper();
 
-    auto getSize() const -> sf::Vector2f;
+    TextWrapper(sf::Vector2f const &position, std::string const &txt);
 
-    auto getPosition() const -> sf::Vector2f;
+    ~TextWrapper() override = default;
 
-    auto setFontSize(int fontSize) -> void;
+    auto getPosition() const -> sf::Vector2f override;
 
-    auto setPosition(sf::Vector2f const& position) -> void;
+    auto getSize() const -> sf::Vector2f override;
 
-    auto setColor(sf::Color color) -> void;
+    auto setPosition(sf::Vector2f const &position) -> void override;
+
+    auto setSize(sf::Vector2f const &size) -> void override;
+
+    auto getFont() const -> sf::Font;
+
+    auto getFontSize() const -> unsigned int;
+
+    auto getColor() const -> sf::Color;
+
+    auto getText() const -> std::string;
+
+    auto getLetterSpacing() const -> float;
+
+    auto setFont(Fonts const &font) -> void;
+
+    auto setFontSize(unsigned int fontSize) -> void;
+
+    auto setColor(sf::Color const &color) -> void;
+
+    auto setText(std::string const &txt) -> void;
 
     auto setLetterSpacing(float letterSpacing) -> void;
 
-    auto isMouseOver(sf::Vector2i const& mousePosition) const -> bool;
-
-    auto setText(std::string const& t) -> void;
-
-    auto setFont(Fonts const& font) -> void;
-
     auto centerBothAxis(sf::Vector2f const& parentPosition, sf::Vector2f const& parentSize) -> void;
 
-    auto centerHorizontalAxis(float parentX, float parentWidth, float posY) -> void;
+    auto centerHorizontalAxis(float parentXPosition, float parentWidth, float positionY) -> void;
 
-    auto show() -> void;
+    auto bindOnClick(std::function<void()> const &onTextClickHandler) -> void;
 
-    auto hide() -> void;
+    auto onClick() -> void override;
 
-    static auto drawTextWrappers(sf::RenderWindow &window) -> void;
+    auto isMouseOver(const sf::Vector2i &mousePosition) const -> bool override;
+
+    auto show() -> void override;
+
+    auto hide() -> void override;
+
+    auto draw(sf::RenderWindow &renderWindow) -> void override;
+
+    static std::vector<std::unique_ptr<Component>> textWrappers;
 
 private:
 
-    sf::Text text;
-    static std::vector<TextWrapper> textWrappers;
+    std::function<void()> clickHandler;
 
-    auto initTextProperties(std::string const &t, sf::Color const &color, Fonts const &font, int fontSize) -> void;
+    sf::Text text;
+
+    auto initDefaultProperties() -> void;
 
 };

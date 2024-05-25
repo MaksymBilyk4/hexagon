@@ -3,10 +3,10 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include "../../utils/font/Fonts.hpp"
-#include "../components/version2/ModalVer2.hpp"
-#include "../components/version2/ButtonVer2.hpp"
-#include "../components/version2/TextWrapperVer2.hpp"
-#include "../components/version2/CheckBoxGroupVer2.hpp"
+#include "../components/Modal/Modal.hpp"
+#include "../components/Button/Button.hpp"
+#include "../components/TextWrapper/TextWrapper.hpp"
+#include "../components/CheckBox/CheckBoxGroup.hpp"
 
 struct HomeLayoutBuilder {
 
@@ -22,9 +22,9 @@ private:
     static auto makeStartGameButton(sf::RenderWindow &renderWindow) -> void;
     static auto makeGameChoiceGroup() -> void;
 
-    static std::unique_ptr<ModalVer2> modal;
-    static std::unique_ptr<TextWrapperVer2> title;
-    static std::unique_ptr<ButtonVer2> button;
-    static std::unique_ptr<CheckBoxGroupVer2> checkBoxGroup;
+    static std::unique_ptr<Modal> modal;
+    static std::unique_ptr<TextWrapper> title;
+    static std::unique_ptr<Button> button;
+    static std::unique_ptr<CheckBoxGroup> checkBoxGroup;
 
 };

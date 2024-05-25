@@ -1,97 +1,126 @@
-#include "SFML/Graphics.hpp"
-#include <vector>
-#include <algorithm>
-#include "fmt/core.h"
-
 #include "./TextWrapper.hpp"
-#include "../../../utils/font/FontHolder.hpp"
-#include "../../../utils/ComponentUtil.hpp"
 
+std::vector<std::unique_ptr<Component>>TextWrapper::textWrappers;
 
-std::vector<TextWrapper> TextWrapper::textWrappers;
-
-TextWrapper::TextWrapper(std::string const& t, sf::Color const& color, Fonts const& font, int fontSize) {
-    initTextProperties(t, color, font, fontSize);
+TextWrapper::TextWrapper() {
+    text.setPosition({0, 0});
+    text.setString("Text");
+    initDefaultProperties();
 }
 
-TextWrapper::TextWrapper(std::string const& t) {
-    initTextProperties(t, sf::Color::Black, Fonts::ROBOTO_REGULAR_FONT, 20);
+TextWrapper::TextWrapper(const sf::Vector2f &position, const std::string &txt) {
+    text.setPosition(position);
+    text.setString(txt);
+    initDefaultProperties();
 }
 
-TextWrapper::TextWrapper() {};
-
-auto TextWrapper::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
-    return ComponentUtil::isMouseOver(text.getPosition(), text.getGlobalBounds().getSize(), mousePosition);
+auto TextWrapper::getPosition() const -> sf::Vector2f {
+    return text.getPosition();
 }
 
 auto TextWrapper::getSize() const -> sf::Vector2f {
     return text.getGlobalBounds().getSize();
 }
 
-auto TextWrapper::setPosition(sf::Vector2f const& position) -> void {
+auto TextWrapper::setPosition(const sf::Vector2f &position) -> void {
     text.setPosition(position);
 }
 
-auto TextWrapper::setText(std::string const& t) -> void {
-    text.setString(t);
+auto TextWrapper::setSize(const sf::Vector2f &size) -> void {
+    // no implementation for this component
 }
 
-auto TextWrapper::setFontSize(int fontSize) -> void {
+auto TextWrapper::getFont() const -> sf::Font {
+    return *text.getFont();
+}
+
+auto TextWrapper::getFontSize() const -> unsigned int {
+    return text.getCharacterSize();
+}
+
+auto TextWrapper::getColor() const -> sf::Color {
+    return text.getFillColor();
+}
+
+auto TextWrapper::getText() const -> std::string {
+    return text.getString();
+}
+
+auto TextWrapper::getLetterSpacing() const -> float {
+    return text.getLetterSpacing();
+}
+
+auto TextWrapper::setFont(const Fonts &font) -> void {
+    text.setFont(FontHolder::getFont(font));
+}
+
+auto TextWrapper::setFontSize(unsigned int fontSize) -> void {
     text.setCharacterSize(fontSize);
 }
 
-auto TextWrapper::setColor(sf::Color color) -> void {
+auto TextWrapper::setColor(const sf::Color &color) -> void {
     text.setFillColor(color);
+}
+
+auto TextWrapper::setText(const std::string &txt) -> void {
+    text.setString(txt);
 }
 
 auto TextWrapper::setLetterSpacing(float letterSpacing) -> void {
     text.setLetterSpacing(letterSpacing);
 }
 
-auto TextWrapper::setFont(Fonts const& font) -> void {
-    text.setFont(FontHolder::getFont(font));
-}
-
 auto TextWrapper::centerBothAxis(sf::Vector2f const& parentPosition, sf::Vector2f const& parentSize) -> void {
     text.setPosition({
-        parentPosition.x + (parentSize.x / 2) - text.getGlobalBounds().width  / 2,
-        parentPosition.y + (parentSize.y / 3) - text.getGlobalBounds().height / 2
+        parentPosition.x + (parentSize.x / 2) - text.getGlobalBounds().width / 2,
+        parentPosition.y + (parentSize.y / 3) - text.getGlobalBounds().height / 2,
     });
 }
 
-// TODO Centering with Letter Spacings
-auto TextWrapper::centerHorizontalAxis(float parentX, float parentWidth, float posY) -> void {
+auto TextWrapper::centerHorizontalAxis(float parentXPosition, float parentWidth, float positionY) -> void {
     text.setPosition({
-        parentX + (parentWidth / 2) - (text.getGlobalBounds().width / 2),
-        posY
+        parentXPosition + (parentWidth / 2) - (text.getGlobalBounds().width / 2),
+        positionY
     });
+}
+
+auto TextWrapper::bindOnClick(const std::function<void()> &onTextClickHandler) -> void {
+    clickHandler = onTextClickHandler;
+}
+
+auto TextWrapper::onClick() -> void {
+    if (clickHandler) clickHandler();
+    else Component::onClick();
+}
+
+auto TextWrapper::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
+    return ComponentUtil::isMouseOver(*this, mousePosition);
 }
 
 auto TextWrapper::show() -> void {
-    textWrappers.push_back(*this);
+    textWrappers.push_back(std::make_unique<TextWrapper>(*this));
 }
 
 auto TextWrapper::hide() -> void {
-    auto tw = std::ranges::find_if(textWrappers.begin(), textWrappers.end(), [this](TextWrapper &tw) -> bool {
-        return &tw == this;
-    });
+    auto textWrapperExistenceIterator = std::find_if(
+            textWrappers.begin(),
+            textWrappers.end(),
+            [this](std::unique_ptr<Component> const &textWrapper) -> bool {
+                return textWrapper.get() == this;
+            }
+    );
 
-    textWrappers.erase(tw);
+    if (textWrapperExistenceIterator != textWrappers.end())
+        textWrappers.erase(textWrapperExistenceIterator);
 }
 
-auto TextWrapper::drawTextWrappers(sf::RenderWindow &window) -> void {
-    for (TextWrapper &tw: textWrappers) {
-        window.draw(tw.text);
-    }
+auto TextWrapper::draw(sf::RenderWindow &renderWindow) -> void {
+    renderWindow.draw(text);
 }
 
-auto TextWrapper::initTextProperties(std::string const &t, sf::Color const &color, Fonts const &font, int fontSize) -> void {
-    text.setFont(FontHolder::getFont(font));
-    text.setFillColor(color);
-    text.setCharacterSize(fontSize);
-    text.setString(t);
-}
 
-auto TextWrapper::getPosition() const -> sf::Vector2f {
-    return sf::Vector2f();
+auto TextWrapper::initDefaultProperties() -> void {
+    text.setFillColor(sf::Color::Black);
+    text.setCharacterSize(20);
+    text.setFont(FontHolder::getFont(Fonts::ROBOTO_REGULAR_FONT));
 }

@@ -3,9 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include "../layout/components/Button/Button.hpp"
 #include "../layout/components/CheckBox/CheckBoxGroup.hpp"
-#include "./cursor/CursorHolder.hpp"
-#include "../layout/components/version2/ButtonVer2.hpp"
-#include "../layout/components/version2/CheckBoxGroupVer2.hpp"
+#include "./cursor/Cursor.hpp"
+#include "../layout/components/Button/Button.hpp"
+#include "../layout/components/CheckBox/CheckBoxGroup.hpp"
 
 struct EventHandler {
 

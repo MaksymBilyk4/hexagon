@@ -24,10 +24,7 @@ add_executable(hexagon main.cpp
         utils/RandomGenerator.cpp
         utils/ComponentUtil.hpp
         utils/font/FontHolder.cpp
-        utils/cursor/CursorHolder.cpp
-
-        layout/utils/LayoutController.cpp
-        layout/utils/LayoutConstructor.cpp
+        utils/cursor/Cursor.cpp
 
         layout/figures/Circle.cpp
 
@@ -37,18 +34,13 @@ add_executable(hexagon main.cpp
         layout/components/CheckBox/CheckBox.cpp
         layout/components/CheckBox/CheckBoxGroup.cpp
         utils/ComponentUtil.cpp
-        utils/cursor/CurrentHolder.hpp
+        utils/cursor/CursorHolder.hpp
         layout/components/Component.hpp
         layout/components/Box.hpp
-        layout/components/version2/ButtonVer2.cpp
-        layout/components/version2/TextWrapperVer2.cpp
-        layout/components/version2/ModalVer2.cpp
-        layout/components/version2/CheckBoxVer2.cpp
-        layout/components/version2/CheckBoxGroupVer2.cpp
         layout/builders/HomeLayoutBuilder.cpp
         layout/builders/LayoutBuilder.cpp
 
-        utils/Drawer.cpp
+        layout/drawer/Drawer.cpp
 )
 
 add_executable(debug debug.cpp)

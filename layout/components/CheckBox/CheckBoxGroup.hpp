@@ -1,49 +1,52 @@
 #pragma once
 
+#include "SFML/Graphics.hpp"
+#include <memory>
 #include <vector>
+#include <string>
+
 #include "CheckBox.hpp"
 
-#include <fmt/core.h>
-#include <fmt/format.h>
+struct CheckBoxGroup : Component {
 
+    auto getPosition() const -> sf::Vector2f override;
 
-struct CheckBoxGroup {
+    auto getSize() const -> sf::Vector2f override;
 
-    CheckBoxGroup() {}
+    auto getClickedPosition() const -> sf::Vector2i;
 
-    // ASK
-//    ~CheckBoxGroup() {
-//        for (auto &group: groups) {
-//            fmt::println("destroyed {}", fmt::ptr(group));
-//            delete group;
-//        }
-//
-//        delete currentActive;
-//    }
+    auto setPosition(sf::Vector2f const &position) -> void override;
 
-    auto add(CheckBox const &checkBox) -> void;
+    auto setSize(sf::Vector2f const &size) -> void override;
 
-    auto show() -> void;
+    static auto setClickedPosition(sf::Vector2i const& mousePosition) -> void;
 
-    auto hide() -> void;
+    auto isMouseOver(const sf::Vector2i &mousePosition) const -> bool override;
 
-    static auto catchOnMouseClick(sf::Vector2i const &mousePos) -> void;
+    auto onClick() -> void override;
 
-    static auto catchOnMouseOver(sf::Window &window) -> void;
+    auto onMouseOver() -> void override;
 
-    auto getActiveContext() const -> const std::string &;
+    auto onMouseLeave() -> void override;
 
-    auto getActiveCheckBox() const -> const CheckBox *;
+    auto show() -> void override;
 
-    auto setDefaultActive(CheckBox &checkBox) -> void;
+    auto hide() -> void override;
 
-    static auto drawCheckBoxGroups(sf::RenderWindow &window) -> void;
+    auto draw(sf::RenderWindow &renderWindow) -> void override;
+
+    auto getActiveCheckBoxActionContext() const -> const std::string&;
+
+    auto addCheckBox(CheckBox &checkBox) -> void;
+
+    static std::vector<std::unique_ptr<Component>> groups;
 
 private:
 
-    static std::vector<CheckBoxGroup *> groups;
-    std::vector<CheckBox> checkBoxGroup;
+//    std::vector<std::unique_ptr<CheckBox>> checkBoxGroup;
+    std::vector<CheckBox*> checkBoxGroup;
 
-    CheckBox *currentActive;
+    CheckBox* currentActive;
 
+    static sf::Vector2i clickedPosition;
 };
