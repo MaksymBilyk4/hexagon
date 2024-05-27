@@ -63,6 +63,7 @@ auto CheckBox::show() -> void {
 }
 
 auto CheckBox::hide() -> void {
+//    label.hide();
     // no need to be implemented
 }
 

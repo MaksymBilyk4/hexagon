@@ -98,20 +98,21 @@ auto TextWrapper::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
 }
 
 auto TextWrapper::show() -> void {
-    textWrappers.push_back(std::make_unique<TextWrapper>(*this));
+    textWrappers.push_back(std::unique_ptr<TextWrapper>(this));
 }
 
 auto TextWrapper::hide() -> void {
-    auto textWrapperExistenceIterator = std::find_if(
-            textWrappers.begin(),
-            textWrappers.end(),
-            [this](std::unique_ptr<Component> const &textWrapper) -> bool {
-                return textWrapper.get() == this;
-            }
-    );
-
-    if (textWrapperExistenceIterator != textWrappers.end())
-        textWrappers.erase(textWrapperExistenceIterator);
+    fmt::println("works");
+//    auto textWrapperExistenceIterator = std::find_if(
+//            textWrappers.begin(),
+//            textWrappers.end(),
+//            [this](std::unique_ptr<Component> const &textWrapper) -> bool {
+//                return textWrapper.get() == this;
+//            }
+//    );
+//
+//    if (textWrapperExistenceIterator != textWrappers.end())
+//        textWrappers.erase(textWrapperExistenceIterator);
 }
 
 auto TextWrapper::draw(sf::RenderWindow &renderWindow) -> void {

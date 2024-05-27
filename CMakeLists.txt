@@ -41,6 +41,7 @@ add_executable(hexagon main.cpp
         layout/builders/LayoutBuilder.cpp
 
         layout/drawer/Drawer.cpp
+        layout/builders/GameLayoutBuilder.cpp
 )
 
 add_executable(debug debug.cpp)

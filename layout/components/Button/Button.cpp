@@ -146,7 +146,7 @@ auto Button::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
 }
 
 auto Button::show() -> void {
-    buttons.push_back(std::make_unique<Button>(*this));
+    buttons.push_back(std::unique_ptr<Button>(this));
     buttonText.show();
 }
 
@@ -159,8 +159,10 @@ auto Button::hide() -> void {
             }
     );
 
-    if (buttonExistenceIterator != buttons.end())
+    if (buttonExistenceIterator != buttons.end())  {
+//        buttonText.hide();
         buttons.erase(buttonExistenceIterator);
+    }
 }
 
 auto Button::draw(sf::RenderWindow &renderWindow) -> void {

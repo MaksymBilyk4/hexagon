@@ -7,6 +7,7 @@
 #include "../components/Button/Button.hpp"
 #include "../components/TextWrapper/TextWrapper.hpp"
 #include "../components/CheckBox/CheckBoxGroup.hpp"
+#include "./GameLayoutBuilder.hpp"
 
 struct HomeLayoutBuilder {
 
@@ -24,6 +25,8 @@ private:
 
     static std::unique_ptr<Modal> modal;
     static std::unique_ptr<TextWrapper> title;
+    static std::unique_ptr<TextWrapper> rubies;
+    static std::unique_ptr<TextWrapper> pearls;
     static std::unique_ptr<Button> button;
     static std::unique_ptr<CheckBoxGroup> checkBoxGroup;
 

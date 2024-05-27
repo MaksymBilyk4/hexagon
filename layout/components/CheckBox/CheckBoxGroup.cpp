@@ -69,7 +69,7 @@ auto CheckBoxGroup::show() -> void {
         currentActive->on();
     }
 
-    groups.push_back(std::make_unique<CheckBoxGroup>(*this));
+    groups.push_back(std::unique_ptr<CheckBoxGroup>(this));
 }
 
 auto CheckBoxGroup::hide() -> void {
@@ -82,6 +82,10 @@ auto CheckBoxGroup::hide() -> void {
     );
 
     if (groupExistenceIterator != groups.end()) {
+//        auto castedGroup = dynamic_cast<CheckBoxGroup*>((*groupExistenceIterator).get());
+//        for (CheckBox* checkBox : castedGroup->getCheckBoxGroup()) {
+//            checkBox->hide();
+//        }
         groups.erase(groupExistenceIterator);
     }
 }
@@ -93,6 +97,10 @@ auto CheckBoxGroup::draw(sf::RenderWindow &renderWindow) -> void {
 
 auto CheckBoxGroup::getActiveCheckBoxActionContext() const -> const std::string & {
     return currentActive->getActionContext();
+}
+
+auto CheckBoxGroup::getCheckBoxGroup() -> std::vector<CheckBox *> & {
+    return checkBoxGroup;
 }
 
 auto CheckBoxGroup::addCheckBox(CheckBox &checkBox) -> void {
