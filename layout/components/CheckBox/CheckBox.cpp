@@ -59,16 +59,15 @@ auto CheckBox::onMouseLeave() -> void {
 }
 
 auto CheckBox::show() -> void {
-    // no need to be implemented
+    label.show();
 }
 
 auto CheckBox::hide() -> void {
-    // no need to be implemented
+    label.hide();
 }
 
 auto CheckBox::draw(sf::RenderWindow &renderWindow) -> void {
     renderWindow.draw(checkBoxBase);
-    label.show();
 }
 
 auto CheckBox::getLabel() const -> const TextWrapper& {
@@ -162,6 +161,10 @@ auto CheckBox::setLabelFontSize(unsigned int fontSize) -> void {
 
 auto CheckBox::setLabelFont(const Fonts &font) -> void {
     label.setFont(font);
+}
+
+auto CheckBox::centerLabel(float parentXPosition, float parentWidth, float positionY) -> void {
+    label.centerHorizontalAxis(parentXPosition, parentWidth, positionY);
 }
 
 auto CheckBox::setActionContext(const std::string &context) -> void {

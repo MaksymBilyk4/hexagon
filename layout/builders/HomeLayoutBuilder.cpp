@@ -1,22 +1,20 @@
 #include "./HomeLayoutBuilder.hpp"
 
+std::vector<std::unique_ptr<Component>> HomeLayoutBuilder::components;
 std::unique_ptr<Modal> HomeLayoutBuilder::modal;
-std::unique_ptr<TextWrapper> HomeLayoutBuilder::title;
-std::unique_ptr<Button> HomeLayoutBuilder::button;
-std::unique_ptr<CheckBoxGroup> HomeLayoutBuilder::checkBoxGroup;
 
 auto HomeLayoutBuilder::build() -> void {
+    for (auto const &comp: components)
+        comp->show();
+
     modal->show();
-    title->show();
-    button->show();
-    checkBoxGroup->show();
 }
 
 auto HomeLayoutBuilder::unbuild() -> void {
+    for (auto const &comp: components)
+        comp->hide();
+
     modal->hide();
-    title->hide();
-    button->hide();
-    checkBoxGroup->hide();
 }
 
 auto HomeLayoutBuilder::initHomeScreen(sf::RenderWindow &renderWindow) -> void {
@@ -40,8 +38,33 @@ auto HomeLayoutBuilder::makeMainModal(sf::RenderWindow &renderWindow) -> void {
     headerText->centerHorizontalAxis(mainModal->getPosition().x, mainModal->getSize().x,
                                      mainModal->getPosition().y + 50);
 
+    auto pearls = std::make_unique<TextWrapper>();
+    pearls->setText("Pears");
+    pearls->setColor(sf::Color(56, 119, 235));
+    pearls->setFont(Fonts::ROBOTO_MEDIUM_FONT);
+    pearls->setFontSize(40);
+    auto pearlsPosition = sf::Vector2f(
+            mainModal->getPosition().x +
+            (mainModal->getSize().x / 2 - pearls->getSize().x + mainModal->getSize().x * 0.1),
+            mainModal->getPosition().y + mainModal->getSize().y * 0.25);
+    pearls->setPosition(pearlsPosition);
+
+
+    auto rubies = std::make_unique<TextWrapper>();
+    rubies->setText("Rubies");
+    rubies->setColor(sf::Color(247, 62, 62));
+    rubies->setFont(Fonts::ROBOTO_MEDIUM_FONT);
+    rubies->setFontSize(40);
+    auto rubiesPosition = sf::Vector2f(
+            mainModal->getPosition().x +
+            (mainModal->getSize().x / 2 - pearls->getSize().x - mainModal->getSize().x * 0.1),
+            mainModal->getPosition().y + mainModal->getSize().y * 0.25);
+    rubies->setPosition(rubiesPosition);
+
     modal = std::move(mainModal);
-    title = std::move(headerText);
+    components.push_back(std::move(headerText));
+    components.push_back(std::move(rubies));
+    components.push_back(std::move(pearls));
 }
 
 auto HomeLayoutBuilder::makeStartGameButton(sf::RenderWindow &renderWindow) -> void {
@@ -52,22 +75,37 @@ auto HomeLayoutBuilder::makeStartGameButton(sf::RenderWindow &renderWindow) -> v
     startGameButton->setButtonTextFontSize(40);
     startGameButton->setColor({190, 190, 190});
     startGameButton->setHoverColor({255, 255, 255});
-    startGameButton->setPosition({static_cast<float>(renderWindow.getSize().x / 2 - startGameButton->getSize().x / 2), 725});
-    startGameButton->bindOnClick([]() -> void { fmt::println("Start Button Home Layout Builder"); });
+    startGameButton->setPosition(
+            {static_cast<float>(renderWindow.getSize().x / 2 - startGameButton->getSize().x / 2), 725});
+    startGameButton->setButtonTextColor(sf::Color(sf::Color::Black));
+    startGameButton->bindOnClick([]() -> void {
+        HomeLayoutBuilder::unbuild();
+        fmt::println("unbuild");
+        fmt::println("{}", Button::buttons.size());
+        fmt::println("{}", Modal::modals.size());
+        fmt::println("{}", CheckBoxGroup::groups.size());
+        fmt::println("{}", TextWrapper::textWrappers.size());
+    });
 
-    button = std::move(startGameButton);
+    components.push_back(std::move(startGameButton));
 }
 
 auto HomeLayoutBuilder::makeGameChoiceGroup() -> void {
     auto group = std::make_unique<CheckBoxGroup>();
-    auto cb1 = new CheckBox({390, 500}, {30, 30}, "PLAYER     vs.    COMPUTER");
-    auto cb2 = new CheckBox({390, 570}, {30, 30}, "PLAYER     vs.     PLAYER ");
+
+    auto cb1YPos = static_cast<float>( modal->getPosition().y + modal->getSize().y / 1.70);
+    auto cb2YPos = static_cast<float>(modal->getPosition().y + modal->getSize().y / 1.45);
+
+    auto cb1 = new CheckBox({390, cb1YPos}, {30, 30}, "PLAYER     vs.    COMPUTER");
+    auto cb2 = new CheckBox({390, cb2YPos}, {30, 30}, "PLAYER     vs.     PLAYER ");
 
     cb1->setActionContext("Check Box 1");
     cb2->setActionContext("Check Box 2");
+    cb1->centerLabel(modal->getPosition().x, modal->getSize().x, cb1YPos - 10);
+    cb2->centerLabel(modal->getPosition().x, modal->getSize().x, cb2YPos - 10);
 
     group->addCheckBox(*cb1);
     group->addCheckBox(*cb2);
 
-    checkBoxGroup = std::move(group);
+    components.push_back(std::move(group));
 }

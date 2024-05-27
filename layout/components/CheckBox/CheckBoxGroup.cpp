@@ -36,7 +36,7 @@ auto CheckBoxGroup::isMouseOver(const sf::Vector2i &mousePosition) const -> bool
 }
 
 auto CheckBoxGroup::onClick() -> void {
-    for (auto const &checkBoxPtr : checkBoxGroup) {
+    for (auto const &checkBoxPtr: checkBoxGroup) {
         if (checkBoxPtr->isMouseOver(clickedPosition) || checkBoxPtr->getLabel().isMouseOver(clickedPosition)) {
             if (checkBoxPtr != currentActive) {
                 currentActive->off();
@@ -67,6 +67,9 @@ auto CheckBoxGroup::show() -> void {
     if (!checkBoxGroup.empty()) {
         currentActive = checkBoxGroup[0];
         currentActive->on();
+
+        for (auto const& cb : checkBoxGroup)
+            cb->show();
     }
 
     groups.push_back(std::make_unique<CheckBoxGroup>(*this));
@@ -77,13 +80,21 @@ auto CheckBoxGroup::hide() -> void {
             groups.begin(),
             groups.end(),
             [this](std::unique_ptr<Component> const &group) -> bool {
-                return group.get() == this;
+                return group->getComponentId() == getComponentId();
             }
     );
 
     if (groupExistenceIterator != groups.end()) {
+        auto group = dynamic_cast<CheckBoxGroup *>((*groupExistenceIterator).get());
+        group->hideLabels();
+
         groups.erase(groupExistenceIterator);
     }
+}
+
+auto CheckBoxGroup::hideLabels() -> void {
+    for (auto const& checkBox : checkBoxGroup)
+        checkBox->hide();
 }
 
 auto CheckBoxGroup::draw(sf::RenderWindow &renderWindow) -> void {

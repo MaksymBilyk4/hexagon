@@ -35,12 +35,12 @@ add_executable(hexagon main.cpp
         layout/components/CheckBox/CheckBoxGroup.cpp
         utils/ComponentUtil.cpp
         utils/cursor/CursorHolder.hpp
-        layout/components/Component.hpp
         layout/components/Box.hpp
         layout/builders/HomeLayoutBuilder.cpp
         layout/builders/LayoutBuilder.cpp
 
         layout/drawer/Drawer.cpp
+        layout/components/Component.cpp
 )
 
 add_executable(debug debug.cpp)

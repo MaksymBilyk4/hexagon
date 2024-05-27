@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <vector>
 #include "../../utils/font/Fonts.hpp"
 #include "../components/Modal/Modal.hpp"
 #include "../components/Button/Button.hpp"
@@ -22,9 +23,8 @@ private:
     static auto makeStartGameButton(sf::RenderWindow &renderWindow) -> void;
     static auto makeGameChoiceGroup() -> void;
 
+    static std::vector<std::unique_ptr<Component>> components;
+
     static std::unique_ptr<Modal> modal;
-    static std::unique_ptr<TextWrapper> title;
-    static std::unique_ptr<Button> button;
-    static std::unique_ptr<CheckBoxGroup> checkBoxGroup;
 
 };

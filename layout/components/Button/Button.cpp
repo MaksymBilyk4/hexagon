@@ -155,12 +155,18 @@ auto Button::hide() -> void {
             buttons.begin(),
             buttons.end(),
             [this](std::unique_ptr<Component> const &button) -> bool {
-                return button.get() == this;
+                return button.get()->getComponentId() == getComponentId();
             }
     );
 
-    if (buttonExistenceIterator != buttons.end())
+    if (buttonExistenceIterator != buttons.end()) {
+        if (Cursor::getCurrentHolder() == CursorHolder::BUTTON) {
+            Cursor::setCurrentHolder(CursorHolder::NO_ONE);
+            Cursor::setSimpleCursor();
+        }
+        buttonText.hide();
         buttons.erase(buttonExistenceIterator);
+    }
 }
 
 auto Button::draw(sf::RenderWindow &renderWindow) -> void {

@@ -82,6 +82,8 @@ struct CheckBox : Box {
 
     auto setLabelFont(Fonts const& font) -> void;
 
+    auto centerLabel(float parentXPosition, float parentWidth, float positionY) -> void;
+
     auto setActionContext(std::string const& context) -> void;
 
     auto setIsActive(bool state) -> void;

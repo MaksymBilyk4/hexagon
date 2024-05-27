@@ -5,6 +5,8 @@
 
 struct Component {
 
+    Component();
+
     virtual auto getPosition() const -> sf::Vector2f = 0;
 
     virtual auto getSize() const -> sf::Vector2f = 0;
@@ -35,7 +37,10 @@ struct Component {
 
     virtual ~Component() = default;
 
-    // think about doing globalWindow field here, that every extended class could use it instead of throw it within params or props
-//    static sf::RenderWindow globalWindow;
+    auto getComponentId() const -> int;
 
+    static int idCounter;
+
+private:
+    int componentId;
 };

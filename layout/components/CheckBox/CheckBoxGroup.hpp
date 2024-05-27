@@ -39,11 +39,12 @@ struct CheckBoxGroup : Component {
 
     auto addCheckBox(CheckBox &checkBox) -> void;
 
+    auto hideLabels() -> void;
+
     static std::vector<std::unique_ptr<Component>> groups;
 
 private:
 
-//    std::vector<std::unique_ptr<CheckBox>> checkBoxGroup;
     std::vector<CheckBox*> checkBoxGroup;
 
     CheckBox* currentActive;

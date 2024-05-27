@@ -68,7 +68,7 @@ auto Modal::hide() -> void {
             modals.begin(),
             modals.end(),
             [this](std::unique_ptr<Component> const &modal) -> bool {
-                return modal.get() == this;
+                return modal->getComponentId() == getComponentId();
             }
     );
 

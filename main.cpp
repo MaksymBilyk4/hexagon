@@ -28,6 +28,11 @@ int main() {
     HomeLayoutBuilder::initHomeScreen(window);
     HomeLayoutBuilder::build();
 
+    fmt::println("{}", Button::buttons.size());
+    fmt::println("{}", Modal::modals.size());
+    fmt::println("{}", CheckBoxGroup::groups.size());
+    fmt::println("{}", TextWrapper::textWrappers.size());
+
     while (window.isOpen()) {
 
         auto event = sf::Event();

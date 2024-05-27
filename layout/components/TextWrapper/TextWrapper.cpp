@@ -106,7 +106,7 @@ auto TextWrapper::hide() -> void {
             textWrappers.begin(),
             textWrappers.end(),
             [this](std::unique_ptr<Component> const &textWrapper) -> bool {
-                return textWrapper.get() == this;
+                return textWrapper->getComponentId() == getComponentId();
             }
     );
 
