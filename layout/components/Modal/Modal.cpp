@@ -60,7 +60,7 @@ auto Modal::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
 }
 
 auto Modal::show() -> void {
-    modals.push_back(std::make_unique<Modal>(*this));
+    modals.push_back(std::unique_ptr<Modal>(this));
 }
 
 auto Modal::hide() -> void {
@@ -72,8 +72,9 @@ auto Modal::hide() -> void {
             }
     );
 
-    if (modalExistenceIterator != modals.end())
+    if (modalExistenceIterator != modals.end()) {
         modals.erase(modalExistenceIterator);
+    }
 }
 
 auto Modal::draw(sf::RenderWindow &renderWindow) -> void {

@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "../Component.hpp"
 
 #include "CheckBox.hpp"
 
@@ -36,6 +37,8 @@ struct CheckBoxGroup : Component {
     auto draw(sf::RenderWindow &renderWindow) -> void override;
 
     auto getActiveCheckBoxActionContext() const -> const std::string&;
+
+    auto getCheckBoxGroup() -> std::vector<CheckBox*>&;
 
     auto addCheckBox(CheckBox &checkBox) -> void;
 

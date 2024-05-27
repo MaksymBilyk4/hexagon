@@ -5,6 +5,7 @@
 #include "layout/figures/Circle.hpp"
 #include "layout/builders/LayoutBuilder.hpp"
 #include "layout/builders/HomeLayoutBuilder.hpp"
+#include "layout/builders/GameLayoutBuilder.hpp"
 
 #include "utils/font/FontHolder.hpp"
 #include "utils/EventHandler.hpp"
@@ -25,7 +26,10 @@ int main() {
     Cursor::setAppWindow(window);
 
     LayoutBuilder::generateFigures(window);
+
     HomeLayoutBuilder::initHomeScreen(window);
+    GameLayoutBuilder::initGameField();
+
     HomeLayoutBuilder::build();
 
     fmt::println("{}", Button::buttons.size());
