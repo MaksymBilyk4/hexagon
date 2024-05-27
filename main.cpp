@@ -28,14 +28,14 @@ int main() {
     LayoutBuilder::generateFigures(window);
 
     HomeLayoutBuilder::initHomeScreen(window);
-    GameLayoutBuilder::initGameField();
+//    GameLayoutBuilder::initGameField();
 
     HomeLayoutBuilder::build();
 
-    fmt::println("{}", Button::buttons.size());
-    fmt::println("{}", Modal::modals.size());
-    fmt::println("{}", CheckBoxGroup::groups.size());
-    fmt::println("{}", TextWrapper::textWrappers.size());
+    fmt::println("Buttons {}", Button::buttons.size());
+    fmt::println("Modals {}", Modal::modals.size());
+    fmt::println("Check Box {}", CheckBoxGroup::groups.size());
+    fmt::println("Text {}", TextWrapper::textWrappers.size());
 
     while (window.isOpen()) {
 
