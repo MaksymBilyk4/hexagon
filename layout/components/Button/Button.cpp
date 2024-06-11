@@ -6,12 +6,26 @@ Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, const std
     buttonBase.setPosition(position);
     buttonBase.setSize(size);
 
+    buttonBase.setOutlineThickness(3);
+
+    innerColorCopy = sf::Color(190, 190, 190);
+    buttonBase.setFillColor(innerColorCopy);
+
+    innerBorderColorCopy = sf::Color(194, 31, 188);
+    buttonBase.setOutlineColor(innerBorderColorCopy);
+
+    hoverColor = sf::Color(255,255,255);
+    hoverBorderColor = sf::Color(194,31,188);
+
     buttonText.setText(btnText);
     buttonText.setFontSize(20);
     buttonText.setColor(sf::Color::Black);
     buttonText.setFont(Fonts::ROBOTO_MEDIUM_FONT);
     buttonText.centerBothAxis(position, size);
+
+    clickHandler = [this]() -> void {fmt::println("Button on click. Component: {}", getComponentId());};
 }
+
 
 auto Button::getPosition() const -> sf::Vector2f {
     return buttonBase.getPosition();
@@ -104,6 +118,10 @@ auto Button::setButtonTextFont(const Fonts &font) -> void {
     buttonText.setFont(font);
 }
 
+auto Button::setButtonTextPosition(const sf::Vector2f &position) -> void {
+    buttonText.setPosition(position);
+}
+
 auto Button::setButtonTextFontSize(unsigned int fontSize) -> void {
     buttonText.setFontSize(fontSize);
 }
@@ -121,7 +139,7 @@ auto Button::bindOnClick(const std::function<void()> &onButtonClickHandler) -> v
 }
 
 auto Button::onClick() -> void {
-    if (clickHandler) clickHandler();
+    if (clickHandler != nullptr) clickHandler();
     else Component::onClick();
 }
 
@@ -155,15 +173,17 @@ auto Button::hide() -> void {
             buttons.begin(),
             buttons.end(),
             [this](std::unique_ptr<Component> const &button) -> bool {
-                return button.get()->getComponentId() == getComponentId();
+                 return button->getComponentId() == getComponentId();
             }
     );
 
-    if (buttonExistenceIterator != buttons.end()) {
+
+    if (buttonExistenceIterator < buttons.end()) {
         if (Cursor::getCurrentHolder() == CursorHolder::BUTTON) {
             Cursor::setCurrentHolder(CursorHolder::NO_ONE);
             Cursor::setSimpleCursor();
         }
+
         buttonText.hide();
         buttons.erase(buttonExistenceIterator);
     }

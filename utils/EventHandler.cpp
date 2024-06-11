@@ -26,6 +26,11 @@ auto EventHandler::mouse_click(sf::Window &window) -> void {
 
     ComponentUtil::listenOnMouseClick(Button::buttons, mousePosition);
 
+//    TextField::disableFocus(mousePosition);
+//    ComponentUtil::listenOnMouseClick(TextField::textFields, mousePosition);
+
+    GameField::listenFieldClick(mousePosition);
+
     CheckBoxGroup::setClickedPosition(mousePosition);
     ComponentUtil::listenOnMouseClick(CheckBoxGroup::groups, mousePosition);
 }

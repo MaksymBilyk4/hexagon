@@ -20,7 +20,8 @@ Modal::Modal(const sf::RenderWindow &renderWindow, int width, int height) {
     // bottom left point/corner
     modalBase[3].position = sf::Vector2f(windowMidX - (width / 2), windowMidY + (height / 2));
 
-    setInlineColor(sf::Color(255, 255, 255, 150));
+
+    setVerticalGradient(sf::Color(191, 64, 191, 150), sf::Color(75, 0, 130, 150));
 
 }
 
@@ -60,7 +61,7 @@ auto Modal::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
 }
 
 auto Modal::show() -> void {
-    modals.push_back(std::unique_ptr<Modal>(this));
+    modals.push_back(std::make_unique<Modal>(*this));
 }
 
 auto Modal::hide() -> void {

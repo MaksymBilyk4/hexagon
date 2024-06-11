@@ -2,14 +2,16 @@
 
 auto ComponentUtil::listenOnMouseClick(const std::vector<std::unique_ptr<Component>> &components, const sf::Vector2i &mousePosition) -> void {
     for (auto const &comp: components) {
-        if (comp->isMouseOver(mousePosition)) comp->onClick();
+        if (comp != nullptr && comp->isMouseOver(mousePosition)) comp->onClick();
     }
 }
 
 auto ComponentUtil::listenOnMouseMove(const std::vector<std::unique_ptr<Component>> &components, const sf::Vector2i &mousePosition) -> void {
     for (auto const& comp : components) {
-        if (comp->isMouseOver(mousePosition)) comp->onMouseOver();
-        else comp -> onMouseLeave();
+        if (comp != nullptr) {
+            if (comp->isMouseOver(mousePosition)) comp->onMouseOver();
+            else comp -> onMouseLeave();
+        }
     }
 }
 

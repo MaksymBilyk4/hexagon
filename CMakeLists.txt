@@ -37,14 +37,24 @@ add_executable(hexagon main.cpp
         utils/cursor/CursorHolder.hpp
         layout/components/Box.hpp
         layout/builders/HomeLayoutBuilder.cpp
-        layout/builders/LayoutBuilder.cpp
+        layout/builders/BackgroundBuilder.cpp
 
         layout/drawer/Drawer.cpp
         layout/components/Component.cpp
+        layout/components/GameField/constants/FieldState.hpp
+        layout/components/GameField/GameField.cpp
+        layout/components/GameField/components/Hexagon.cpp
+        layout/builders/GameLayoutBuilder.cpp
+        layout/components/Player/Player.cpp
+        layout/components/GameField/constants/CurrentMovePlayer.hpp
+        layout/components/GameField/components/PlayerFigure.cpp
+        layout/components/GameField/components/CountBar.cpp
+        layout/builders/GameInfo/GameInfoLayoutBuilder.cpp
+        layout/builders/GameInfo/GameInfo.hpp
+        layout/builders/GameInfo/GameMode.hpp
+        layout/components/TextField/TextField.cpp
+        utils/Game/GameFileStore.cpp
 )
-
-add_executable(debug debug.cpp)
 
 target_link_libraries(hexagon sfml-graphics)
 target_link_libraries(hexagon fmt)
-target_link_libraries(debug fmt)

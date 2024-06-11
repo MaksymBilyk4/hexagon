@@ -8,6 +8,8 @@
 #include "../components/Button/Button.hpp"
 #include "../components/TextWrapper/TextWrapper.hpp"
 #include "../components/CheckBox/CheckBoxGroup.hpp"
+#include "./GameInfo/GameInfoLayoutBuilder.hpp"
+#include "./GameInfo/GameMode.hpp"
 
 struct HomeLayoutBuilder {
 
@@ -17,13 +19,17 @@ struct HomeLayoutBuilder {
 
     static auto initHomeScreen(sf::RenderWindow &renderWindow) -> void;
 
+    static auto getGameMode() -> GameMode;
+
 private:
 
     static auto makeMainModal(sf::RenderWindow &renderWindow) -> void;
-    static auto makeStartGameButton(sf::RenderWindow &renderWindow) -> void;
+    static auto makeLinkButtons(sf::RenderWindow &renderWindow) -> void;
     static auto makeGameChoiceGroup() -> void;
 
     static std::vector<std::unique_ptr<Component>> components;
+
+    static std::unique_ptr<CheckBoxGroup> modeGroup;
 
     static std::unique_ptr<Modal> modal;
 

@@ -1,0 +1,16 @@
+fix:
+- hover cursor
+- text on text when saving to a file
+- bot eats ultra fast and eat himself
+
+layout:
+- background click
+- background of saved best/saved
+
+todo:
+- bot
+- best games mechanics
+- save to file a game mode which was chosen
+- end of the game and display winner (short summary, calculate how meny steps was done and how many figures was eaten at all)
+- clear code, refactor repeated parts
+- alert about illegal moves

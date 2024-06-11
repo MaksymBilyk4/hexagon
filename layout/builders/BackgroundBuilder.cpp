@@ -1,10 +1,10 @@
-#include "./LayoutBuilder.hpp"
+#include "./BackgroundBuilder.hpp"
 
-RandomGenerator LayoutBuilder::random;
-std::vector<Circle> LayoutBuilder::figures;
+RandomGenerator BackgroundBuilder::random;
+std::vector<Circle> BackgroundBuilder::figures;
 
 
-auto LayoutBuilder::drawBackground(sf::RenderWindow &renderWindow) -> void {
+auto BackgroundBuilder::drawBackground(sf::RenderWindow &renderWindow) -> void {
     auto maxRadiusCircle = std::ranges::max(figures, {}, [](Circle &lc) -> float { return lc.radius; });
 
     for (auto &layoutCircle: figures) {
@@ -22,7 +22,7 @@ auto LayoutBuilder::drawBackground(sf::RenderWindow &renderWindow) -> void {
     }
 }
 
-auto LayoutBuilder::generateFigures(sf::RenderWindow &renderWindow) -> void {
+auto BackgroundBuilder::generateFigures(sf::RenderWindow &renderWindow) -> void {
     for (int i = 0; i < 100; i++) {
         float x = static_cast<float> (random.generate(0, renderWindow.getSize().x));
         float y = static_cast<float> (random.generate(30, renderWindow.getSize().y - 30));

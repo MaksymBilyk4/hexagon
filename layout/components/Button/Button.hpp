@@ -64,6 +64,8 @@ struct Button : Box {
 
     auto setButtonTextFont(Fonts const& font) -> void;
 
+    auto setButtonTextPosition(sf::Vector2f const& position) -> void;
+
     auto setButtonTextFontSize(unsigned int fontSize) -> void;
 
     auto setButtonTextColor(sf::Color const& color) -> void;

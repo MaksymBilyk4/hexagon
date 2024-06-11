@@ -65,11 +65,15 @@ auto CheckBoxGroup::onMouseLeave() -> void {
 
 auto CheckBoxGroup::show() -> void {
     if (!checkBoxGroup.empty()) {
-        currentActive = checkBoxGroup[0];
-        currentActive->on();
 
-        for (auto const& cb : checkBoxGroup)
+        if (currentActive == nullptr) {
+            currentActive = checkBoxGroup[0];
+            currentActive->on();
+        }
+
+        for (auto const &cb: checkBoxGroup) {
             cb->show();
+        }
     }
 
     groups.push_back(std::make_unique<CheckBoxGroup>(*this));
@@ -87,13 +91,14 @@ auto CheckBoxGroup::hide() -> void {
     if (groupExistenceIterator != groups.end()) {
         auto group = dynamic_cast<CheckBoxGroup *>((*groupExistenceIterator).get());
         group->hideLabels();
+        currentActive = group->currentActive;
 
         groups.erase(groupExistenceIterator);
     }
 }
 
 auto CheckBoxGroup::hideLabels() -> void {
-    for (auto const& checkBox : checkBoxGroup)
+    for (auto const &checkBox: checkBoxGroup)
         checkBox->hide();
 }
 

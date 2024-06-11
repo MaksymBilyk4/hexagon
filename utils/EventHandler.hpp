@@ -5,7 +5,10 @@
 #include "../layout/components/CheckBox/CheckBoxGroup.hpp"
 #include "./cursor/Cursor.hpp"
 #include "../layout/components/Button/Button.hpp"
+#include "../layout/components/GameField/components/Hexagon.hpp"
 #include "../layout/components/CheckBox/CheckBoxGroup.hpp"
+#include "../layout/components/GameField/GameField.hpp"
+#include "../layout/components/TextField/TextField.hpp"
 
 struct EventHandler {
 

@@ -50,7 +50,7 @@ private:
 
     std::vector<CheckBox*> checkBoxGroup;
 
-    CheckBox* currentActive;
+    CheckBox* currentActive = nullptr;
 
     static sf::Vector2i clickedPosition;
 };

@@ -1,4 +1,23 @@
-what is undefined behaviour
+Open a one file: std::fstream
 
+std::ios::in | std::ios::out - delete characters, default constructor's argument
+std::ios::out - write to file
+std::ios::in - read from file
+std::ios::trunc - rewrite whole file
+std::ios::app - append to the end
 
-Ask about doing global class that give access to render window at any part of program
+Work with multiple files: std::filesystem
+
+std::filesystem::path("path fo file") - create a path to file
+std::filesystem::exists("path") - checks if path exists
+std::filesystem::path(".") - current program's location (where it called)
+
+for (auto& entry : fs::directory_iterator(path)) { // std::filesystem::recursive_directory_iterator - shows subdirectories' content
+    fmt::println("{}", entry.path().filename());
+}
+
+std::filesystem::file_size(), which returns the number of bytes occupied by the file (may not work when passing a path to a folder);
+std::filesystem::remove() and std::filesystem::remove_all(), which delete a file or folder at the specified path;
+std::filesystem::copy() and std::filesystem::copy_file(), which copy folders or files;
+std::filesystem::create_directory() and std::filesystem::create_directories(), which create folders.
+

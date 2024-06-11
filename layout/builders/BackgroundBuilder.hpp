@@ -5,7 +5,7 @@
 #include "../figures/Circle.hpp"
 #include "../../utils/RandomGenerator.hpp"
 
-struct LayoutBuilder {
+struct BackgroundBuilder {
 
     static auto drawBackground(sf::RenderWindow &renderWindow) -> void;
 

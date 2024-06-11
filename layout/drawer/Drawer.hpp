@@ -10,4 +10,6 @@ struct Drawer {
 
     static auto draw(std::vector<std::unique_ptr<Component>> &components, sf::RenderWindow &renderWindow) -> void;
 
+    static auto draw(std::vector<std::vector<std::unique_ptr<Component>>> &components, sf::RenderWindow& renderWindow) -> void;
+
 };
