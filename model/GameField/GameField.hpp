@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <map>
 #include "fmt/core.h"
 #include "../../layout/components/Player/PlayerData.hpp"
 #include "../../layout/components/Game/constants/FieldState.hpp"
@@ -12,6 +13,7 @@
 #include "../../layout/components/Game/components/IllegalMove.hpp"
 #include "../../layout/builders/GameLayoutBuilder.hpp"
 #include "../GameStatistic/GameStatistic.hpp"
+#include "./BotMoveData.hpp"
 
 struct GameField {
 
@@ -20,6 +22,14 @@ struct GameField {
     static auto listenFieldClick(sf::Vector2i const& mousePosition) -> void;
 
     static auto botStep() -> void;
+
+    static auto getPossibleMoves() -> std::vector<BotMoveData>;
+
+    static auto getMoveData(int row, int col, bool isGreenStep) -> BotMoveData;
+
+    static auto getEatEnemies(int row, int col) -> int;
+
+    static auto canMoveTo(int fromRow, int toRow, int fromCol, int toCol) -> bool;
 
     static auto resetGameState() -> void;
 
@@ -60,7 +70,7 @@ private:
     static auto eatEnemy(Hexagon* clickedHex) -> void;
 
     static auto clearBorders() -> void;
-    static auto drawBorders(int clickedRow, int clickedCol) -> void;
+    static auto drawBorders(int clickedRow, int clickedCol, bool isBot) -> void;
 
     static auto changePlayer() -> void;
 

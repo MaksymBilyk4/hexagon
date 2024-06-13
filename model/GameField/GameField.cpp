@@ -57,13 +57,25 @@ auto GameField::listenFieldClick(sf::Vector2i const &mousePosition) -> void {
                         handleFieldClick(i, j, fieldMatrix[i][j].get());
                     else if (playerFigureSelected && stateMatrix[i][j] == FieldState::EMPTY)
                         handlePlayerStep(i, j, fieldMatrix[i][j].get());
-                    else if (static_cast<int>(stateMatrix[i][j]) != static_cast<int>(currentMovePlayer) && static_cast<int>(stateMatrix[i][j]) > 0){
+                    else {
                         if (!IllegalMove::isOpened) {
                             auto currentPlayer = std::string(currentMovePlayer == Player::FIRST ? "Player One" : "Player two");
                             auto oppositePlayer = std::string(currentMovePlayer == Player::FIRST ? "Player Two" : "Player One");
-                            illegalMoveModal->setTitle("Illegal move!\n" + currentPlayer);
-                            illegalMoveModal->setMessage("You can't eat " + oppositePlayer + " like this!!!");
-                            IllegalMove::show();
+                            if (currentSelected && static_cast<int>(stateMatrix[i][j]) != static_cast<int>(currentMovePlayer) && static_cast<int>(stateMatrix[i][j]) > 0) {
+                                illegalMoveModal->setTitle("Illegal move!");
+                                illegalMoveModal->setMessage(currentPlayer + ". You can't eat " + oppositePlayer + " like this!!!");
+                                IllegalMove::show();
+                            } else if (!currentSelected) {
+                                if (stateMatrix[i][j] == FieldState::EMPTY) {
+                                    illegalMoveModal->setTitle("Empty field");
+                                    illegalMoveModal->setMessage(currentPlayer + ", please, choose your figure");
+                                    illegalMoveModal->show();
+                                } else if (playerFigures[i][j] != nullptr) {
+                                    illegalMoveModal->setTitle("Choose your figure");
+                                    illegalMoveModal->setMessage("It is figure of " + oppositePlayer + "\nTo make a step choose your figure");
+                                    illegalMoveModal->show();
+                                }
+                            }
                         }
                     }
                 }
@@ -72,27 +84,29 @@ auto GameField::listenFieldClick(sf::Vector2i const &mousePosition) -> void {
 
 auto GameField::handlePlayerStep(int clickedRow, int clickedCol, Component *hexagon) -> void {
     auto clickedHex = dynamic_cast<Hexagon *>(hexagon); // where user clicked
-    auto selectedHex = dynamic_cast<Hexagon *>(currentSelected); // current selected players hex
+    auto selectedHex = dynamic_cast<Hexagon *>(currentSelected); // current selected player's hex
 
     auto selectedRow = selectedHex->getFieldRow();
     auto selectedCol = selectedHex->getFieldCol();
 
 
-    if (clickedHex->getBorderColor() == sf::Color::Green || clickedHex->getIsSelectedByBot()) {
-        auto playerFigure = std::make_unique<PlayerFigure>(
-                currentMovePlayer == Player::FIRST ? playerOne->getPlayerColor() : playerTwo->getPlayerColor());
+    if (clickedHex->getBorderColor() == sf::Color::Green || clickedHex->getBotShortStep()) {
+        fmt::println("move near");
+        auto playerFigure = std::make_unique<PlayerFigure>(currentMovePlayer == Player::FIRST ? playerOne->getPlayerColor() : playerTwo->getPlayerColor());
         GameLayoutBuilder::setPlayerFigurePosition(playerFigure.get(), clickedHex->getPosition());
         playerFigures[clickedRow][clickedCol] = std::move(playerFigure);
-        stateMatrix[clickedRow][clickedCol] =
-                currentMovePlayer == Player::FIRST ? FieldState::PLAYER_ONE : FieldState::PLAYER_TWO;
+        stateMatrix[clickedRow][clickedCol] = currentMovePlayer == Player::FIRST ? FieldState::PLAYER_ONE : FieldState::PLAYER_TWO;
         gainedFields++;
         eatEnemy(clickedHex);
         GameStatistic::updateGameStatistic(true);
         clearBorders();
-        if (clickedHex->getIsSelectedByBot()) clickedHex->setIsSelectedByBot(false);
+        if (clickedHex->getIsSelectedByBot()) {
+            clickedHex->setIsSelectedByBot(false);
+            clickedHex->setBotShortStep(false);
+        }
         changePlayer();
         GameStatistic::printStatistic();
-    } else if (clickedHex->getBorderColor() == sf::Color::Yellow || clickedHex->getIsSelectedByBot()) {
+    } else if (clickedHex->getBorderColor() == sf::Color::Yellow || clickedHex->getBotLongStep()) {
         auto playerFigure = playerFigures[selectedRow][selectedCol].get();
         GameLayoutBuilder::setPlayerFigurePosition(dynamic_cast<PlayerFigure *>(playerFigure),
                                                    clickedHex->getPosition());
@@ -103,18 +117,52 @@ auto GameField::handlePlayerStep(int clickedRow, int clickedCol, Component *hexa
         eatEnemy(clickedHex);
         GameStatistic::updateGameStatistic(false);
         clearBorders();
-        if (clickedHex->getIsSelectedByBot()) clickedHex->setIsSelectedByBot(false);
+        if (clickedHex->getIsSelectedByBot()) {
+            clickedHex->setIsSelectedByBot(false);
+            clickedHex->setBotLongStep(false);
+        }
         changePlayer();
         GameStatistic::printStatistic();
     } else {
         if (!IllegalMove::isOpened) {
             auto currentPlayer = std::string(currentMovePlayer == Player::FIRST ? "Player One" : "Player two");
-            illegalMoveModal->setTitle("Illegal Move!\n"+currentPlayer);
-            illegalMoveModal->setMessage("Too far, sorry. Not today...\nGo to green or yellow area");
+            illegalMoveModal->setTitle("Illegal Move!");
+            illegalMoveModal->setMessage(currentPlayer + ". Too far, sorry. Not today...\nGo to green or yellow area");
             illegalMoveModal->show();
         }
     }
 
+}
+
+auto GameField::handleFieldClick(int row, int col, Component *hexagon) -> void {
+    auto clickedHexagon = dynamic_cast<Hexagon *>(hexagon);
+
+    if (!playerFigureSelected) {
+        clickedHexagon->drawYellowBorder();
+
+        currentSelected = hexagon;
+        playerFigureSelected = true;
+
+        drawBorders(row, col, false);
+    } else if (currentSelected != nullptr && hexagon == currentSelected) {
+        clickedHexagon->drawDefaultBorder();
+
+        currentSelected = nullptr;
+        playerFigureSelected = false;
+
+        clearBorders();
+    } else if (currentSelected != nullptr && hexagon != currentSelected) {
+        auto oldSelected = dynamic_cast<Hexagon *>(currentSelected);
+        oldSelected->drawDefaultBorder();
+
+        currentSelected = hexagon;
+        playerFigureSelected = true;
+
+        clearBorders();
+        clickedHexagon->drawYellowBorder();
+
+        drawBorders(row, col, false);
+    }
 }
 
 auto GameField::changePlayer() -> void {
@@ -139,89 +187,185 @@ auto GameField::changePlayer() -> void {
 auto GameField::botStep() -> void {
     fmt::println("BOT STEP");
 
-    bool found = false;
+    auto figureStepsMap = std::map<std::pair<int, int>, std::vector<BotMoveData>>();
+    auto playerTwoColor = playerTwo->getPlayerColor();
 
-    auto selectedRow = int();
-    auto selectedCol = int();
-    for (auto row = 0; row < playerFigures.size(); ++row) {
-        for (auto col = 0; col < playerFigures[row].size(); ++col) {
-            if (playerFigures[row][col] != nullptr) {
-                auto fig = dynamic_cast<PlayerFigure *>(playerFigures[row][col].get());
-                if (fig->getColor() == playerTwo->getPlayerColor()) {
-                    currentSelected = fieldMatrix[row][col].get();
-                    playerFigureSelected = true;
-                    selectedRow = row;
-                    selectedCol = col;
-                    found = true;
-                    break;
+    for (auto i = 0; i < stateMatrix.size(); ++i)
+        for (auto j = 0; j < stateMatrix.size(); ++j) {
+            if (stateMatrix[i][j] == FieldState::PLAYER_TWO) {
+                auto coordinates = std::pair<int, int>(i, j);
+                drawBorders(i, j, true);
+                figureStepsMap[coordinates] = getPossibleMoves();
+                clearBorders();
+            }
+        }
+
+    auto selectedStep = std::pair<std::pair<int, int>, BotMoveData>({0, 0}, BotMoveData());
+
+    for (auto const& entry : figureStepsMap) {
+        fmt::println("----------\n{}", entry.first);
+        for (auto const& move : entry.second) {
+            if (move.greenStep && move.gain >= selectedStep.second.gain) {
+                selectedStep.second = move;
+                selectedStep.first = entry.first;
+            }
+            else if (move.gain >= selectedStep.second.gain) {
+                selectedStep.second = move;
+                selectedStep.first = entry.first;
+            }
+        }
+    }
+
+    fmt::println("Bot chosen figure: {}. Move data: {}", selectedStep.first, selectedStep.second.getDataString());
+
+    currentSelected = fieldMatrix[selectedStep.first.first][selectedStep.first.second].get();
+    playerFigureSelected = true;
+
+    auto chosenBotHex = dynamic_cast<Hexagon *>(fieldMatrix[selectedStep.second.goRow][selectedStep.second.goCol].get());
+    chosenBotHex->setIsSelectedByBot(true);
+    selectedStep.second.greenStep ? chosenBotHex->setBotShortStep(true) : chosenBotHex->setBotLongStep(true);
+    handlePlayerStep(selectedStep.second.goRow, selectedStep.second.goCol, fieldMatrix[selectedStep.second.goRow][selectedStep.second.goCol].get());
+}
+
+auto GameField::getPossibleMoves() -> std::vector<BotMoveData> {
+    auto moveDataVec = std::vector<BotMoveData>();
+
+    for (auto & row : fieldMatrix) {
+        for (const auto & col : row) {
+            if (col != nullptr) {
+                auto hex = dynamic_cast<Hexagon*>(col.get());
+                if (hex->getBotShortStep()) {
+                    auto data = getMoveData(hex->getFieldRow(), hex->getFieldCol(), true);
+                    moveDataVec.push_back(data);
+                } else if (hex->getBotLongStep()) {
+                    auto data = getMoveData(hex->getFieldRow(), hex->getFieldCol(), false);
+                    moveDataVec.push_back(data);
                 }
             }
         }
-        if (found) break;
     }
 
-    auto stepRow = int();
-    auto stepCol = int();
-    found = false;
-
-    auto rowDifference = int();
-    auto colDifference = int();
-
-    for (auto row = 0; row < stateMatrix.size(); ++row) {
-        for (auto col = 0; col < stateMatrix[row].size(); ++col) {
-            rowDifference = selectedRow - row;
-            colDifference = selectedCol - col;
-
-            if (rowDifference == 0 && (std::abs(colDifference) == 1 || std::abs(colDifference) == 2) &&
-                stateMatrix[row][col] == FieldState::EMPTY) {
-                found = true;
-                stepRow = row;
-                stepCol = col;
-                break;
-            }
-
-        }
-        if (found) break;
-    }
-
-    fmt::println("bot row selected, col selected {} {}", selectedRow, selectedCol);
-    fmt::println("bot selected step to move {} {}", stepCol, stepRow);
-
-    auto clickedHex = dynamic_cast<Hexagon *>(fieldMatrix[stepRow][stepCol].get());
-    clickedHex->setIsSelectedByBot(true);
-    handlePlayerStep(0, 3, fieldMatrix[stepRow][stepCol].get());
+    return moveDataVec;
 }
 
-auto GameField::handleFieldClick(int row, int col, Component *hexagon) -> void {
-    auto clickedHexagon = dynamic_cast<Hexagon *>(hexagon);
+auto GameField::getMoveData(int row, int col, bool isGreenStep) -> BotMoveData {
 
-    if (!playerFigureSelected) {
-        clickedHexagon->drawYellowBorder();
+    auto data = BotMoveData();
+    data.goRow = row;
+    data.goCol = col;
 
-        currentSelected = hexagon;
-        playerFigureSelected = true;
+    auto enemies = getEatEnemies(row, col);
 
-        drawBorders(row, col);
-    } else if (currentSelected != nullptr && hexagon == currentSelected) {
-        clickedHexagon->drawDefaultBorder();
+    data.enemiesAround = enemies;
+    data.gain = enemies;
+    data.greenStep = isGreenStep;
 
-        currentSelected = nullptr;
-        playerFigureSelected = false;
+//    auto selectedFigures = dynamic_cast<Hexagon*>(currentSelected);
+//    auto selectedRow = selectedFigures->getFieldRow();
+//    auto selectedCol = selectedFigures->getFieldCol();
+//    fmt::println("selected row col: {} {}", selectedRow, selectedCol);
 
-        clearBorders();
-    } else if (currentSelected != nullptr && hexagon != currentSelected) {
 
-        auto oldSelected = dynamic_cast<Hexagon *>(currentSelected);
-        oldSelected->drawDefaultBorder();
+//    auto oppositePlayerState = currentMovePlayer == Player::FIRST ? FieldState::PLAYER_TWO : FieldState::PLAYER_ONE;
+//    bool foundLoose = false;
 
-        currentSelected = hexagon;
-        playerFigureSelected = true;
+//    if (!isGreenStep) {
+//        auto startRow = selectedRow - 3;
+//        auto startCol = selectedCol - 3;
+//        auto endRow = selectedRow + 3;
+//        auto endCol = selectedCol + 3;
+//        for (auto i = startRow; i <= endRow; ++i) {
+//            if (i < 0 || i >= fieldMatrix.size()) continue;
+//            for (auto j = startCol; j <= endCol; ++j) {
+//                if (j < 0 || j >= fieldMatrix.size()) continue;
+//                if (stateMatrix[i][j] == oppositePlayerState && canMoveTo(i, j, selectedFigures->getFieldRow(), selectedFigures->getFieldCol())) {
+//                    data.looseIfGo = getEatEnemies(i, j);
+//                    foundLoose = true;
+//                    break;
+//                }
+//            }
+//            if (foundLoose) break;
+//        }
+//    }
 
-        clearBorders();
-        clickedHexagon->drawYellowBorder();
+    return data;
+}
 
-        drawBorders(row, col);
+auto GameField::getEatEnemies(int row, int col) -> int {
+    auto currentPlayerState = currentMovePlayer == Player::FIRST ? FieldState::PLAYER_ONE : FieldState::PLAYER_TWO;
+
+    auto enemies = 0;
+    auto startRow = row - 1;
+    auto startCol = col - 1;
+
+    auto endRow = startRow + 2;
+    auto endCol = startCol + 2;
+    for (auto i = startRow; i <= endRow; ++i) {
+        if (i < 0 || i >= fieldMatrix.size()) continue;
+        for (auto j = startCol; j <= endCol; ++j) {
+            if (j < 0 || j >= fieldMatrix.size()) continue;
+            if (stateMatrix[i][j] == FieldState::NOT_EXIST || stateMatrix[i][j] == FieldState::EMPTY || stateMatrix[i][j] == currentPlayerState) continue;
+            if (i == row && j == col) continue;
+
+            if (col < 4) {
+                if (j == endCol && i == startRow || j == startCol && i == endRow) continue;
+                enemies++;
+            } else if (col == 4) {
+                if (i == endRow && j != col) continue;
+                enemies++;
+            } else if (col > 4) {
+                if (j == startCol && i == startRow || j == endCol && i == endRow) continue;
+                enemies++;
+            }
+        }
     }
+
+    return enemies;
+}
+
+auto GameField::canMoveTo(int fromRow, int toRow, int fromCol, int toCol) -> bool {
+    auto absRowDifference = std::abs(fromRow - toRow);
+    auto absColDifference = std::abs(fromCol - toCol);
+
+    if (absRowDifference > 2 || absColDifference > 2) return false;
+
+    auto rowDifference = fromRow - toRow;
+    auto colDifference = fromCol - toCol;
+
+
+    if (fromCol == 3 ) {
+        if (rowDifference == 2 && colDifference < 0) return false;
+        if (rowDifference == -1 && colDifference > 1) return false;
+        if (rowDifference == -2 && (colDifference > 0 || colDifference < -1)) return false;
+    }
+
+    if (fromCol == 5) {
+        if (rowDifference == 2 && colDifference > 0) return false;
+        if (rowDifference == -1 && colDifference < -1) return false;
+        if (rowDifference == -2 && (colDifference < 0 || colDifference > 1)) return false;
+    }
+
+    if (fromCol < 4) {
+        if (rowDifference == 2 && colDifference < 0) return false;
+        if (rowDifference == 1 && colDifference < -1) return false;
+        if (rowDifference == -1 &&colDifference > 1) return false;
+        if (rowDifference == -2 && colDifference > 0) return false;
+    }
+
+    if (fromCol > 5) {
+        if (rowDifference == 2 && colDifference > 0) return false;
+        if (rowDifference == 1 && colDifference > 1) return false;
+        if (rowDifference == -1 && colDifference < -1) return false;
+        if (rowDifference == 02 && colDifference < 0) return false;
+    }
+
+
+    if (fromCol == 4) {
+        if (rowDifference == -1 && absColDifference > 1) return false;
+        if (rowDifference == -2 && colDifference != 0) return false;
+    }
+
+    return true;
 }
 
 auto GameField::eatEnemy(Hexagon *clickedHex) -> void {
@@ -274,11 +418,16 @@ auto GameField::eatEnemy(Hexagon *clickedHex) -> void {
         }
 }
 
-auto GameField::drawBorders(int clickedRow, int clickedCol) -> void {
+auto GameField::drawBorders(int clickedRow, int clickedCol, bool isBot) -> void {
 
     auto rowDifference = int();
     auto colDifference = int();
     auto drawCondition = bool();
+
+    auto drawBorder = [isBot](Hexagon* hex, sf::Color const& drawColor) -> void {
+        if (drawColor == sf::Color::Yellow) isBot ? hex->setBotLongStep(true) : hex->drawYellowBorder();
+        else if (drawColor == sf::Color::Green) isBot ? hex->setBotShortStep(true) : hex->drawGreenBorder();
+    };
 
     for (int i = 0; i < fieldMatrix.size(); ++i)
         for (int j = 0; j < fieldMatrix[i].size(); ++j) {
@@ -292,59 +441,59 @@ auto GameField::drawBorders(int clickedRow, int clickedCol) -> void {
                 if (drawCondition) {
 
                     // YELLOW BORDERS ===========================================================================
-                    if ((rowDifference == 0 && (std::abs(colDifference) == 2))) hex->drawYellowBorder();
+                    if ((rowDifference == 0 && (std::abs(colDifference) == 2))) drawBorder(hex, sf::Color::Yellow);
 
                     if (clickedCol == 4) {
-                        if (rowDifference == -1 && (std::abs(colDifference)) == 1) hex->drawYellowBorder();
-                        if (rowDifference == -2 && colDifference == 0) hex->drawYellowBorder();
-                        if (rowDifference == 2 && (std::abs(colDifference) <= 2)) hex->drawYellowBorder();
-                        if (rowDifference == 1 && (std::abs(colDifference) == 2)) hex->drawYellowBorder();
+                        if (rowDifference == -1 && (std::abs(colDifference)) == 1) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == -2 && colDifference == 0) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == 2 && (std::abs(colDifference) <= 2)) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == 1 && (std::abs(colDifference) == 2)) drawBorder(hex, sf::Color::Yellow);
                     }
 
                     if (clickedCol > 4) {
-                        if (rowDifference == -2 && colDifference == 2 && clickedCol != 5) hex->drawYellowBorder();
+                        if (rowDifference == -2 && colDifference == 2 && clickedCol != 5) drawBorder(hex, sf::Color::Yellow);
                         if (rowDifference == 2 && (colDifference == -1 || colDifference == -2 || colDifference == 0))
-                            hex->drawYellowBorder();
-                        if (rowDifference == 1 && colDifference == 1) hex->drawYellowBorder();
-                        if (rowDifference == -1 && colDifference == 2) hex->drawYellowBorder();
-                        if (rowDifference == 1 && colDifference == -2) hex->drawYellowBorder();
-                        if (rowDifference == -2 && (colDifference == 1 || colDifference == 0)) hex->drawYellowBorder();
-                        if (rowDifference == -1 && (colDifference == -1)) hex->drawYellowBorder();
+                            drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == 1 && colDifference == 1) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == -1 && colDifference == 2) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == 1 && colDifference == -2) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == -2 && (colDifference == 1 || colDifference == 0)) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == -1 && (colDifference == -1)) drawBorder(hex, sf::Color::Yellow);
                     }
 
                     if (clickedCol < 4) {
                         if (rowDifference == 2 && (colDifference == 1 || colDifference == 2 || colDifference == 0))
-                            hex->drawYellowBorder();
-                        if (rowDifference == 1 && colDifference == -1) hex->drawYellowBorder();
-                        if (rowDifference == -1 && colDifference == -2) hex->drawYellowBorder();
-                        if (rowDifference == 1 && colDifference == 2) hex->drawYellowBorder();
-                        if (rowDifference == -2 && (colDifference == -1 || colDifference == 0)) hex->drawYellowBorder();
-                        if (rowDifference == -2 && colDifference == -2 && clickedCol != 3) hex->drawYellowBorder();
-                        if (rowDifference == -1 && (colDifference == 1)) hex->drawYellowBorder();
+                            drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == 1 && colDifference == -1) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == -1 && colDifference == -2) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == 1 && colDifference == 2) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == -2 && (colDifference == -1 || colDifference == 0)) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == -2 && colDifference == -2 && clickedCol != 3) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == -1 && (colDifference == 1)) drawBorder(hex, sf::Color::Yellow);
                     }
 
                     if (clickedCol == 3) {
-                        if (rowDifference == 1 && colDifference == -2) hex->drawYellowBorder();
-                        if (rowDifference == -1 && colDifference == -2) hex->drawYellowBorder();
+                        if (rowDifference == 1 && colDifference == -2) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == -1 && colDifference == -2) drawBorder(hex, sf::Color::Yellow);
                     }
 
                     if (clickedCol == 5) {
-                        if (rowDifference == -1 && colDifference == 2) hex->drawYellowBorder();
-                        if (rowDifference == 1 && colDifference == 2) hex->drawYellowBorder();
+                        if (rowDifference == -1 && colDifference == 2) drawBorder(hex, sf::Color::Yellow);
+                        if (rowDifference == 1 && colDifference == 2) drawBorder(hex, sf::Color::Yellow);
                     }
 
                     // GREEN BORDERS ===========================================================================
                     if ((rowDifference == 0 && (std::abs(colDifference) == 1)) ||
                         (std::abs(rowDifference) == 1 && colDifference == 0))
-                        hex->drawGreenBorder();
+                        drawBorder(hex, sf::Color::Green);
 
-                    if (clickedCol < 4) if (rowDifference == -1 && colDifference == -1) hex->drawGreenBorder();
+                    if (clickedCol < 4) if (rowDifference == -1 && colDifference == -1) drawBorder(hex, sf::Color::Green);
 
-                    if (clickedCol <= 4) if (rowDifference == 1 && colDifference == 1) hex->drawGreenBorder();
+                    if (clickedCol <= 4) if (rowDifference == 1 && colDifference == 1) drawBorder(hex, sf::Color::Green);
 
-                    if (clickedCol >= 4) if (rowDifference == 1 && colDifference == -1) hex->drawGreenBorder();
+                    if (clickedCol >= 4) if (rowDifference == 1 && colDifference == -1) drawBorder(hex, sf::Color::Green);
 
-                    if (clickedCol > 4) if (rowDifference == -1 && colDifference == 1) hex->drawGreenBorder();
+                    if (clickedCol > 4) if (rowDifference == -1 && colDifference == 1) drawBorder(hex, sf::Color::Green);
 
 
                 }
@@ -355,8 +504,12 @@ auto GameField::drawBorders(int clickedRow, int clickedCol) -> void {
 auto GameField::clearBorders() -> void {
     for (auto const &row: fieldMatrix)
         for (auto const &hex: row)
-            if (hex != nullptr)
-                dynamic_cast<Hexagon *>(hex.get())->setBorderColor(Hexagon::defaultBorderColor);
+            if (hex != nullptr) {
+                auto hexField =dynamic_cast<Hexagon *>(hex.get());
+                hexField->setBorderColor(Hexagon::defaultBorderColor);
+                hexField->setBotShortStep(false);
+                hexField->setBotLongStep(false);
+            }
 
 }
 

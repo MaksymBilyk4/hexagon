@@ -56,10 +56,9 @@ add_executable(hexagon main.cpp
         util/game/Path.hpp
         model/GameStatistic/GameStatistic.cpp
         layout/components/Game/components/IllegalMove.cpp
+        model/GameField/BotMoveData.cpp
 )
-
 add_executable(deb debug.cpp)
-
 target_link_libraries(hexagon sfml-graphics)
 target_link_libraries(hexagon fmt)
 target_link_libraries(deb fmt)

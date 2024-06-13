@@ -30,6 +30,10 @@ struct Hexagon : Box {
 
     auto getIsSelectedByBot() const -> bool;
 
+    auto getBotShortStep() const -> bool;
+
+    auto getBotLongStep() const -> bool;
+
     auto setPosition(sf::Vector2f const &position) -> void override;
 
     auto setSize(sf::Vector2f const &size) -> void override;
@@ -47,6 +51,10 @@ struct Hexagon : Box {
     auto setBorderWidth(float borderWidth) -> void override;
 
     auto setIsSelectedByBot(bool isSelected) -> void;
+
+    auto setBotShortStep(bool step) -> void;
+
+    auto setBotLongStep(bool step) -> void;
 
     auto isMouseOver(const sf::Vector2i &mousePosition) const -> bool override;
 
@@ -83,6 +91,10 @@ private:
     int fieldCol;
 
     bool isSelectedByBot;
+
+    bool botShortStep;
+
+    bool botLongStep;
 
     sf::CircleShape hexagon;
 

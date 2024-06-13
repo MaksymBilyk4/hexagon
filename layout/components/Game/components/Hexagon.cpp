@@ -12,6 +12,9 @@ Hexagon::Hexagon() : hexagon(sf::CircleShape(defaultRadius, 6)), state(FieldStat
     hexagon.setOutlineColor(defaultBorderColor);
     hexagon.rotate(30);
 
+    botShortStep = false;
+    botLongStep = false;
+
 }
 
 auto Hexagon::getPosition() const -> sf::Vector2f {
@@ -50,6 +53,14 @@ auto Hexagon::getIsSelectedByBot() const -> bool {
     return isSelectedByBot;
 }
 
+auto Hexagon::getBotShortStep() const -> bool {
+    return botShortStep;
+}
+
+auto Hexagon::getBotLongStep() const -> bool {
+    return botLongStep;
+}
+
 auto Hexagon::setPosition(const sf::Vector2f &position) -> void {
     hexagon.setPosition(position);
 }
@@ -84,6 +95,14 @@ auto Hexagon::setBorderWidth(float borderWidth) -> void {
 
 auto Hexagon::setIsSelectedByBot(bool isSelected) -> void {
     isSelectedByBot = isSelected;
+}
+
+auto Hexagon::setBotShortStep(bool step) -> void {
+    botShortStep = step;
+}
+
+auto Hexagon::setBotLongStep(bool step) -> void {
+    botLongStep = step;
 }
 
 auto Hexagon::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
