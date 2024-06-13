@@ -1,5 +1,4 @@
-#include "EventHandler.hpp"
-
+#include "./EventHandler.hpp"
 
 auto EventHandler::close_window(sf::Window &window) -> void {
     window.close();
@@ -29,7 +28,9 @@ auto EventHandler::mouse_click(sf::Window &window) -> void {
 //    TextField::disableFocus(mousePosition);
 //    ComponentUtil::listenOnMouseClick(TextField::textFields, mousePosition);
 
-    GameField::listenFieldClick(mousePosition);
+    if (!IllegalMove::isOpened && GameField::drawState) {
+        GameField::listenFieldClick(mousePosition);
+    }
 
     CheckBoxGroup::setClickedPosition(mousePosition);
     ComponentUtil::listenOnMouseClick(CheckBoxGroup::groups, mousePosition);

@@ -94,7 +94,7 @@ auto Hexagon::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
 }
 
 auto Hexagon::onClick() -> void {
-    // can't handle here because of circular dependencies of GameField.hpp Hexagon.hpp
+    // can't handle here because of circular dependencies of Game.hpp Hexagon.hpp
 }
 
 auto Hexagon::onMouseOver() -> void {

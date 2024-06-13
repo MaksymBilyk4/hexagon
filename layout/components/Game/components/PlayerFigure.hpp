@@ -3,7 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include <memory>
 #include <vector>
-#include "../../../../utils/ComponentUtil.hpp"
+#include "../../../../util/component/ComponentUtil.hpp"
 #include "./Hexagon.hpp"
 #include "../../Component.hpp"
 #include "../../Box.hpp"

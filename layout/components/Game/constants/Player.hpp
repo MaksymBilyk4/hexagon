@@ -1,6 +1,6 @@
 #pragma once
 
-enum CurrentMovePlayer {
+enum Player {
 
     FIRST = 1,
 

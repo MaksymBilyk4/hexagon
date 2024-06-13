@@ -4,9 +4,9 @@
 #include <string>
 #include "../TextWrapper/TextWrapper.hpp"
 #include "../Box.hpp"
-#include "../../../utils/ComponentUtil.hpp"
-#include "../../../utils/cursor/Cursor.hpp"
-#include "../../../utils/cursor/CursorHolder.hpp"
+#include "../../../util/component/ComponentUtil.hpp"
+#include "../../../util/cursor/Cursor.hpp"
+#include "../../../util/cursor/CursorHolder.hpp"
 
 struct CheckBox : Box {
 

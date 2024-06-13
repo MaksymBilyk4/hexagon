@@ -5,19 +5,23 @@ auto GameFileStore::saveNewGame() -> void {
 
     auto lastGameId = std::string();
     auto lastGameIdFile = std::fstream(
-            "/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/saved_game_data/next_save_game.txt",
+            Path::NEXT_GAME_TO_SAVE_PATH,
             std::ios::in);
     lastGameIdFile >> lastGameId;
     lastGameIdFile.close();
 
-    auto savedGameFileName = std::string(
-            "/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/saved_game_data/game_");
-    savedGameFileName += lastGameId + ".txt";
+    auto savedGameFileName = std::string(Path::GAME_SAVE_PATH);
+    savedGameFileName += "/game_" + lastGameId + ".txt";
 
     auto savedGame = std::ofstream(savedGameFileName, std::ios::out | std::ios::trunc);
 
     auto lastMovePlayer = std::to_string(static_cast<int>(GameField::currentMovePlayer));
     savedGame << lastMovePlayer << "\n";
+    savedGame << GameStatistic::stepsDone << "\n";
+    savedGame << GameStatistic::allFiguresEaten << "\n";
+    savedGame << GameStatistic::firstPlayerAte << "\n";
+    savedGame << GameStatistic::secondPlayerAte << "\n";
+    savedGame << GameStatistic::gameMode << "\n";
 
     auto stateLine = std::string();
     for (auto const &row: GameField::stateMatrix) {
@@ -32,7 +36,7 @@ auto GameFileStore::saveNewGame() -> void {
 
 
     lastGameIdFile = std::fstream(
-            "/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/saved_game_data/next_save_game.txt",
+            Path::NEXT_GAME_TO_SAVE_PATH,
             std::ios::out | std::ios::trunc);
     lastGameIdFile << std::to_string(std::stoi(lastGameId) + 1);
 
@@ -40,7 +44,7 @@ auto GameFileStore::saveNewGame() -> void {
 
 auto GameFileStore::saveOldGame(const std::string &loadedGameNumber) -> void {
 
-    auto path = std::filesystem::path("/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/saved_game_data");
+    auto path = std::filesystem::path(Path::GAME_SAVE_PATH);
 
     auto filename = std::string();
     auto gameNumber = std::string();
@@ -55,6 +59,11 @@ auto GameFileStore::saveOldGame(const std::string &loadedGameNumber) -> void {
 
     auto loadedGameFile = std::fstream(filename, std::ios::out | std::ios::trunc);
     loadedGameFile << std::to_string(static_cast<int>(GameField::currentMovePlayer)) << "\n";
+    loadedGameFile << GameStatistic::stepsDone << "\n";
+    loadedGameFile << GameStatistic::allFiguresEaten << "\n";
+    loadedGameFile << GameStatistic::firstPlayerAte << "\n";
+    loadedGameFile << GameStatistic::secondPlayerAte << "\n";
+    loadedGameFile << GameStatistic::gameMode << "\n";
 
     auto stateLine = std::string();
     for (auto const &row: GameField::stateMatrix) {
@@ -72,7 +81,6 @@ auto GameFileStore::saveOldGame(const std::string &loadedGameNumber) -> void {
 }
 
 auto GameFileStore::uploadGame(std::string const& filename ) -> void {
-    fmt::println("{}", std::filesystem::exists(filename));
     auto savedGameFile = std::fstream(filename, std::ios::in);
     auto lastMovePlayer = std::string();
 
@@ -81,8 +89,28 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
     for (auto &figureRow : GameField::playerFigures)
         figureRow.resize(9);
 
+
+//    savedGameFile >> lastMovePlayer;
     getline(savedGameFile, lastMovePlayer);
 
+    auto doneSteps = std::string();
+    auto figuresEaten = std::string();
+    auto firstPlayerAte = std::string();
+    auto secondPlayerAte = std::string();
+    auto mode = std::string();
+
+    getline(savedGameFile, doneSteps);
+    getline(savedGameFile, figuresEaten);
+    getline(savedGameFile, firstPlayerAte);
+    getline(savedGameFile, secondPlayerAte);
+    getline(savedGameFile, mode);
+
+    GameStatistic::stepsDone = std::stoi(doneSteps);
+    GameStatistic::allFiguresEaten = std::stoi(figuresEaten);
+    GameStatistic::firstPlayerAte = std::stoi(firstPlayerAte);
+    GameStatistic::secondPlayerAte = std::stoi(secondPlayerAte);
+    GameStatistic::gameMode = std::to_string(static_cast<int>(GameMode::PLAYER_VS_PLAYER)) == mode ? GameMode::PLAYER_VS_PLAYER : GameMode::PLAYER_VS_COMPUTER;
+    GameStatistic::printStatistic();
     auto playerOneFigures = 0;
     auto playerTwoFigures = 0;
 
@@ -91,7 +119,6 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
     auto lines = std::vector<std::string>();
 
     auto getStateValue = [](int state) -> FieldState {
-        fmt::println("state ---> {}", state);
         switch (state) {
             case 0:
                 return FieldState::EMPTY;
@@ -109,6 +136,7 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
     for (auto row = 0; row < GameField::stateMatrix.size(); ++row) {
         for (auto col = 0; col < GameField::stateMatrix[row].size(); ++col) {
             state = lines[row][col];
+            fmt::println("{}", state);
             if (state == "1") {
                 auto figure = std::make_unique<PlayerFigure>(GameField::playerOne->getPlayerColor());
                 GameLayoutBuilder::setPlayerFigurePosition(figure.get(), GameField::fieldMatrix[row][col]->getPosition());
@@ -125,15 +153,23 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
         }
     }
 
+    GameStatistic::spaceLeft = GameStatistic::spaceLeft - playerOneFigures - playerTwoFigures;
+
+    GameField::freeSpaceLabel->setText("Free Space Left: " + std::to_string(GameStatistic::spaceLeft));
+    mode = "Game mode: ";
+    mode += GameStatistic::gameMode == GameMode::PLAYER_VS_PLAYER ? "PLAYER VS PLAYER" : "PLAYER VS COMPUTER";
+    GameField::gameModeLabel->setText(mode);
+
     GameField::playerOneCountBar->setCountedItems(playerOneFigures);
     GameField::playerTwoCountBar->setCountedItems(playerTwoFigures);
     GameField::playerOne->setFieldCount(playerOneFigures);
     GameField::playerTwo->setFieldCount(playerTwoFigures);
-    GameField::currentMovePlayer = std::stoi(lastMovePlayer) == 1 ? CurrentMovePlayer::FIRST : CurrentMovePlayer::SECOND;
-    GameField::movePlayerLabel->setText(GameField::currentMovePlayer == CurrentMovePlayer::FIRST ? "Current player: 1" : "Current player: 2");
-    GameField::movePlayerLabel->setColor(GameField::currentMovePlayer == CurrentMovePlayer::FIRST ? GameField::playerOne->getPlayerColor() : GameField::playerTwo->getPlayerColor());
+    GameField::currentMovePlayer = std::stoi(lastMovePlayer) == 1 ? Player::FIRST : Player::SECOND;
+    GameField::movePlayerLabel->setText(GameField::currentMovePlayer == Player::FIRST ? "Current player: 1" : "Current player: 2");
+    GameField::movePlayerLabel->setColor(GameField::currentMovePlayer == Player::FIRST ? GameField::playerOne->getPlayerColor() : GameField::playerTwo->getPlayerColor());
     GameField::printFigureMatrix();
     GameField::printStateMatrix();
+    GameStatistic::printStatistic();
 
     auto loadedGame = GameFileStore::getGameNumber(filename);
     GameField::currentLoadedGame = loadedGame;

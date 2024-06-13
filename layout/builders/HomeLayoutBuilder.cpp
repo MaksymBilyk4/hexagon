@@ -28,10 +28,6 @@ auto HomeLayoutBuilder::initHomeScreen(sf::RenderWindow &renderWindow) -> void {
     makeLinkButtons(renderWindow);
 }
 
-auto HomeLayoutBuilder::getGameMode() -> GameMode {
-    return std::to_string(static_cast<int>(GameMode::PLAYER_VS_COMPUTER)) == modeGroup->getActiveCheckBoxActionContext() ? GameMode::PLAYER_VS_COMPUTER : GameMode::PLAYER_VS_PLAYER;
-}
-
 auto HomeLayoutBuilder::makeMainModal(sf::RenderWindow &renderWindow) -> void {
     auto mainModal = std::make_unique<Modal>(renderWindow, 950, 750);
 
@@ -103,7 +99,7 @@ auto HomeLayoutBuilder::makeLinkButtons(sf::RenderWindow &renderWindow) -> void 
 auto HomeLayoutBuilder::makeGameChoiceGroup() -> void {
     auto group = std::make_unique<CheckBoxGroup>();
 
-    auto cb1YPos = static_cast<float>( modal->getPosition().y + modal->getSize().y / 1.70);
+    auto cb1YPos = static_cast<float>(modal->getPosition().y + modal->getSize().y / 1.70);
     auto cb2YPos = static_cast<float>(modal->getPosition().y + modal->getSize().y / 1.45);
 
     auto cb1 = new CheckBox({450, cb1YPos}, {30, 30}, "PLAYER     vs.    COMPUTER");

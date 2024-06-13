@@ -3,8 +3,13 @@
 std::vector<std::unique_ptr<Component>> GameLayoutBuilder::components;
 std::vector<std::unique_ptr<Component>> GameLayoutBuilder::exitLayoutComponents;
 
-auto GameLayoutBuilder::build() -> void {
+auto GameLayoutBuilder::build(bool isFileBuild) -> void {
     GameField::drawState = true;
+    auto currentMode = std::string("Game mode: ");
+    if (!isFileBuild) currentMode += HomeLayoutBuilder::modeGroup->getActiveCheckBoxActionContext() == std::to_string(GameMode::PLAYER_VS_PLAYER) ? "PLAYER VS PLAYER" : "PLAYER VS COMPUTER";
+    else currentMode += GameStatistic::gameMode == GameMode::PLAYER_VS_PLAYER ? "PLAYER VS PLAYER" : "PLAYER VS COMPUTER";
+    GameField::gameModeLabel->setText(currentMode);
+    GameStatistic::gameMode = HomeLayoutBuilder::modeGroup->getActiveCheckBoxActionContext() == std::to_string(GameMode::PLAYER_VS_PLAYER) ? GameMode::PLAYER_VS_PLAYER : GameMode::PLAYER_VS_COMPUTER;
 
     for (auto const& comp : components)
         comp->show();
@@ -22,6 +27,7 @@ auto GameLayoutBuilder::prepareGameField(sf::RenderWindow &renderWindow) -> void
 
     GameField::initGameItems();
     GameLayoutBuilder::makeExitModal(renderWindow);
+    GameLayoutBuilder::makeIllegalMoveModal(renderWindow);
     GameLayoutBuilder::makeLeaveGameButton();
     GameLayoutBuilder::makeCurrentPlayerMoveLabel();
     GameLayoutBuilder::makePlayersCountBar();
@@ -103,7 +109,40 @@ auto GameLayoutBuilder::setPlayerFigurePosition(PlayerFigure* figure, sf::Vector
     });
 }
 
+
 // DRAWING COMPONENTS =================================================================================================
+auto GameLayoutBuilder::makeIllegalMoveModal(sf::RenderWindow& renderWindow) -> void {
+    auto modal = std::make_unique<Modal>(renderWindow, 850, 500);
+    modal->setVerticalGradient(sf::Color(0,0,0,200), sf::Color(0,0,0,200));
+
+    auto title = std::make_unique<TextWrapper>();
+    title->setPosition({400, 325});
+    title->setFontSize(40);
+    title->setFont(Fonts::SIXTY_FOUR_REGULAR_FONT);
+    title->setColor(sf::Color::White);
+
+    auto message = std::make_unique<TextWrapper>();
+    message->setColor(sf::Color::White);
+    message->setFontSize(25);
+    message->setPosition({400, 425});
+    message->setFont(Fonts::ROBOTO_MEDIUM_FONT);
+
+    auto closeButton = std::make_unique<Button>(sf::Vector2f(400, 550), sf::Vector2f(200, 50), "OK. Close!");
+    closeButton->setButtonTextColor(sf::Color::White);
+    closeButton->setBorderColor(sf::Color::Green);
+    closeButton->setColor(sf::Color::Black);
+    closeButton->bindOnClick([]() -> void {
+        GameField::illegalMoveModal->hide();
+    });
+    closeButton->setHoverColor(sf::Color::Black);
+    closeButton->setBorderColor(sf::Color::Green);
+    closeButton->setButtonTextColor(sf::Color::Green);
+
+    IllegalMove::modal = std::move(modal);
+    IllegalMove::title = std::move(title);
+    IllegalMove::message = std::move(message);
+    IllegalMove::closeButton = std::move(closeButton);
+}
 
 auto GameLayoutBuilder::makeLeaveGameButton() -> void {
     auto leaveGameButton = std::make_unique<Button>(sf::Vector2f(150, 850), sf::Vector2f(140, 50), "QUIT");
@@ -143,6 +182,7 @@ auto GameLayoutBuilder::makeExitModal(sf::RenderWindow& renderWindow) -> void {
 
     yesNoSaveBtn->bindOnClick([]() -> void {
         GameField::resetGameState();
+        if (!GameField::currentLoadedGame.empty()) GameField::currentLoadedGame = "";
         for (auto &comp : exitLayoutComponents)
             comp->hide();
         GameLayoutBuilder::unbuild();
@@ -152,8 +192,8 @@ auto GameLayoutBuilder::makeExitModal(sf::RenderWindow& renderWindow) -> void {
     yesSaveBtn->bindOnClick([]() -> void {
         if (!GameField::currentLoadedGame.empty()) GameFileStore::saveOldGame(GameField::currentLoadedGame);
         else GameFileStore::saveNewGame();
-
         GameField::resetGameState();
+
         for (auto &comp : exitLayoutComponents)
             comp->hide();
         GameLayoutBuilder::unbuild();
@@ -169,15 +209,27 @@ auto GameLayoutBuilder::makeExitModal(sf::RenderWindow& renderWindow) -> void {
 }
 
 auto GameLayoutBuilder::makeCurrentPlayerMoveLabel() -> void {
-    auto currentMoveLabel = std::make_unique<TextWrapper>(sf::Vector2f(1100, 850), "Current player: 1");
+    auto currentMoveLabel = std::make_unique<TextWrapper>(sf::Vector2f(1100, 750), "Current player: 1");
     currentMoveLabel->setColor(GameField::playerOne->getPlayerColor());
     currentMoveLabel->setFontSize(30);
+
+    auto freeSpace = std::make_unique<TextWrapper>(sf::Vector2f(1100, 800), "Free Space Left: 52");
+    freeSpace->setColor(sf::Color::White);
+    freeSpace->setFontSize(30);
+
+    auto mode = std::string("Game mode: ");
+    auto gameModeL = std::make_unique<TextWrapper>(sf::Vector2f(960, 920), "Game mode: ");
+    gameModeL->setColor(sf::Color::White);
+    gameModeL->setFontSize(26);
+
+    GameField::gameModeLabel = std::move(gameModeL);
+    GameField::freeSpaceLabel = std::move(freeSpace);
     GameField::movePlayerLabel = std::move(currentMoveLabel);
 }
 
 auto GameLayoutBuilder::makePlayersCountBar() -> void {
-    auto playerOneBar = std::make_unique<CountBar>(sf::Vector2f(1270, 700), GameField::playerOne->getPlayerColor(), GameField::playerOne->getFieldCount());
-    auto playerTwoBar = std::make_unique<CountBar>(sf::Vector2f(1270, 775), GameField::playerTwo->getPlayerColor(), GameField::playerTwo->getFieldCount());
+    auto playerOneBar = std::make_unique<CountBar>(sf::Vector2f(1270, 600), GameField::playerOne->getPlayerColor(), GameField::playerOne->getFieldCount());
+    auto playerTwoBar = std::make_unique<CountBar>(sf::Vector2f(1270, 675), GameField::playerTwo->getPlayerColor(), GameField::playerTwo->getFieldCount());
 
     GameField::playerOneCountBar = std::move(playerOneBar);
     GameField::playerTwoCountBar = std::move(playerTwoBar);

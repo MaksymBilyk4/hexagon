@@ -9,10 +9,10 @@
 #include <string>
 #include <algorithm>
 
-#include "../../../utils/ComponentUtil.hpp"
+#include "../../../util/component/ComponentUtil.hpp"
 #include "../Box.hpp"
 #include "../TextWrapper/TextWrapper.hpp"
-#include "../../../utils/cursor/Cursor.hpp"
+#include "../../../util/cursor/Cursor.hpp"
 
 struct Button : Box {
 

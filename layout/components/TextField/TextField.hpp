@@ -6,9 +6,9 @@
 #include <memory>
 
 #include "../Box.hpp"
-#include "../../../utils/ComponentUtil.hpp"
-#include "../../../utils/font/Fonts.hpp"
-#include "../../../utils/font/FontHolder.hpp"
+#include "../../../util/component/ComponentUtil.hpp"
+#include "../../../util/font/Fonts.hpp"
+#include "../../../util/font/FontHolder.hpp"
 
 
 struct TextField : Box {

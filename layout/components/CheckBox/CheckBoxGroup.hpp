@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include "../Component.hpp"
+#include "../Game/constants/GameMode.hpp"
 
 #include "CheckBox.hpp"
 

@@ -1,12 +1,12 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 
 #include <algorithm>
 #include <memory>
 #include <vector>
-#include <fmt/core.h>
-#include <fmt/format.h>
-#include "../layout/components/Component.hpp"
+#include "fmt/core.h"
+#include "fmt/format.h"
+#include "../../layout/components/Component.hpp"
 
 struct ComponentUtil {
 

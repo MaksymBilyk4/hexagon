@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "../Box.hpp"
-#include "../../../utils/ComponentUtil.hpp"
+#include "../../../util/component/ComponentUtil.hpp"
 
 struct Modal : Component {
 

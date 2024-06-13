@@ -5,9 +5,12 @@ sf::Font FontHolder::ROBOTO_REGULAR;
 sf::Font FontHolder::SIXTY_FOUR_REGULAR;
 
 FontHolder::FontHolder() {
-    ROBOTO_MEDIUM.loadFromFile("/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/fonts/Roboto-Medium.ttf");
-    ROBOTO_REGULAR.loadFromFile("/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/fonts/Roboto-Regular.ttf");
-    SIXTY_FOUR_REGULAR.loadFromFile("/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/fonts/Sixtyfour-Regular.ttf");
+    auto R_M = Path::FONTS + "/Roboto-Medium.ttf";
+    auto R_R = Path::FONTS + "/Roboto-Regular.ttf";
+    auto S_R = Path::FONTS + "/Sixtyfour-Regular.ttf";
+    ROBOTO_MEDIUM.loadFromFile(R_M);
+    ROBOTO_REGULAR.loadFromFile(R_R);
+    SIXTY_FOUR_REGULAR.loadFromFile(S_R);
 }
 
 auto FontHolder::getFont(Fonts const& font) -> sf::Font& {

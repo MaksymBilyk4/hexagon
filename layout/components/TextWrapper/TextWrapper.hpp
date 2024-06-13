@@ -5,9 +5,9 @@
 #include <memory>
 #include <functional>
 #include "../Component.hpp"
-#include "../../../utils/ComponentUtil.hpp"
-#include "../../../utils/font/FontHolder.hpp"
-#include "../../../utils/font/Fonts.hpp"
+#include "../../../util/component/ComponentUtil.hpp"
+#include "../../../util/font/FontHolder.hpp"
+#include "../../../util/font/Fonts.hpp"
 
 struct TextWrapper : Component {
 

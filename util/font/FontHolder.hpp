@@ -2,6 +2,7 @@
 
 #include "SFML/Graphics.hpp"
 #include "./Fonts.hpp"
+#include "../game/Path.hpp"
 
 struct FontHolder {
 

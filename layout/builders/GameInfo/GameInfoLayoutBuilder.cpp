@@ -2,7 +2,6 @@
 
 
 std::vector<std::unique_ptr<Component>> GameInfoLayoutBuilder::components;
-GameInfo GameInfoLayoutBuilder::infoRenderType;
 std::unique_ptr<TextWrapper> GameInfoLayoutBuilder::infoTitle;
 std::vector<std::unique_ptr<Component>> GameInfoLayoutBuilder::buttons;
 
@@ -18,6 +17,8 @@ auto GameInfoLayoutBuilder::unbuild() -> void {
     for (auto &btn : buttons)
         btn->hide();
 
+    buttons.clear();
+
     for (auto &comp : components)
         if (comp != nullptr) comp->hide();
 
@@ -30,7 +31,7 @@ auto GameInfoLayoutBuilder::buildBestGames() -> void {
 
 auto GameInfoLayoutBuilder::buildSavedGames() -> void {
     infoTitle->setText("Your saved games");
-    auto path = std::filesystem::path("/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/saved_game_data");
+    auto path = std::filesystem::path(Path::GAME_SAVE_PATH);
 
     auto games = std::vector<std::filesystem::path>();
 
@@ -56,20 +57,22 @@ auto GameInfoLayoutBuilder::buildSavedGames() -> void {
         if (step == 1) position.x = mid;
         else if (step == 2) position.x = right;
 
-        auto btn = std::make_unique<Button>(position, sf::Vector2f(200, 40), games[i].filename().string());
-        btn->setButtonTextColor(sf::Color::White);
-        btn->setBorderColor(sf::Color::Green);
-        btn->setColor(sf::Color::Black);
-        btn->setBorderWidth(4);
-        btn->setButtonTextPosition({position.x + 10, position.y + 5});
-        btn->bindOnClick([games, i]() -> void {
+        auto fileButton = std::make_unique<Button>(position, sf::Vector2f(200, 40), games[i].filename().string());
+        fileButton->setButtonTextColor(sf::Color::White);
+        fileButton->setBorderColor(sf::Color::Green);
+        fileButton->setColor(sf::Color::Black);
+        fileButton->setHoverColor(sf::Color::Black);
+//        fileButton->setHoverBorderColor(sf::Color::Green);
+        fileButton->setBorderWidth(4);
+        fileButton->setButtonTextPosition({position.x + 10, position.y + 5});
+        fileButton->bindOnClick([games, i]() -> void {
             GameFileStore::uploadGame(games[i].string());
             GameInfoLayoutBuilder::unbuild();
-            GameLayoutBuilder::build();
+            GameLayoutBuilder::build(true);
         });
 
 
-        buttons.push_back(std::move(btn));
+        buttons.push_back(std::move(fileButton));
         step++;
     }
 

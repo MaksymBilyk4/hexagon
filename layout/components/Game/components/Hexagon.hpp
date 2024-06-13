@@ -6,7 +6,7 @@
 #include <algorithm>
 #include "../../Box.hpp"
 #include "../constants/FieldState.hpp"
-#include "../../../../utils/ComponentUtil.hpp"
+#include "../../../../util/component/ComponentUtil.hpp"
 
 struct Hexagon : Box {
 

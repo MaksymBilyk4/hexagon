@@ -1,12 +1,10 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
 
 #include "layout/components/Button/Button.hpp"
 #include "layout/components/TextWrapper/TextWrapper.hpp"
 #include "layout/components/CheckBox/CheckBoxGroup.hpp"
 #include "layout/components/Modal/Modal.hpp"
-#include "layout/components/GameField/components/Hexagon.hpp"
-#include "layout/components/GameField/components/PlayerFigure.hpp"
+#include "layout/components/Game/components/PlayerFigure.hpp"
 #include "layout/components/TextField/TextField.hpp"
 
 #include "layout/builders/BackgroundBuilder.hpp"
@@ -16,11 +14,8 @@
 
 #include "layout/drawer/Drawer.hpp"
 
-#include "utils/font/FontHolder.hpp"
-#include "utils/EventHandler.hpp"
-
-#include "./utils/Game/GameFileStore.hpp"
-
+#include "util/font/FontHolder.hpp"
+#include "util/event/EventHandler.hpp"
 
 int main() {
     auto window = sf::RenderWindow(sf::VideoMode(1400, 1000), "Hexxagon", sf::Style::Default);
@@ -42,8 +37,6 @@ int main() {
 
     GameField::printStateMatrix();
 
-//    GameFileStore::uploadGame("/Users/maksymbilyk/Desktop/programming/PJAIT/hexagon/assets/saved_game_data/game_101.txt");
-
     HomeLayoutBuilder::build();
 
     while (window.isOpen()) {
@@ -56,14 +49,17 @@ int main() {
 
         BackgroundBuilder::drawBackground(window);
 
-        Drawer::draw(PlayerFigure::playerFigures, window);
 
         if (GameField::drawState) {
+            Drawer::draw(PlayerFigure::playerFigures, window);
             Drawer::draw(GameField::fieldMatrix, window);
             Drawer::draw(GameField::playerFigures, window);
             GameField::playerOneCountBar->draw(window);
             GameField::movePlayerLabel->draw(window);
             GameField::playerTwoCountBar->draw(window);
+            GameField::freeSpaceLabel->draw(window);
+            GameField::gameModeLabel->draw(window);
+            GameField::gameModeLabel->draw(window);
         }
 
         Drawer::draw(Modal::modals, window);

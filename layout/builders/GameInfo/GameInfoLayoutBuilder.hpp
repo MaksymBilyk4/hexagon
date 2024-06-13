@@ -7,7 +7,6 @@
 #include "../../components/Modal/Modal.hpp"
 #include "../../components/TextWrapper/TextWrapper.hpp"
 #include "../../components/Button/Button.hpp"
-#include "./GameInfo.hpp"
 #include "../HomeLayoutBuilder.hpp"
 #include "../GameLayoutBuilder.hpp"
 
@@ -29,7 +28,6 @@ struct GameInfoLayoutBuilder {
 
 private:
 
-    static GameInfo infoRenderType;
 
     static std::unique_ptr<TextWrapper> infoTitle;
 

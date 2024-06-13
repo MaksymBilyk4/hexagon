@@ -3,7 +3,7 @@
 #include <vector>
 #include "../components/Component.hpp"
 #include "../figures/Circle.hpp"
-#include "../../utils/RandomGenerator.hpp"
+#include "../../util/random/RandomGenerator.hpp"
 
 struct BackgroundBuilder {
 

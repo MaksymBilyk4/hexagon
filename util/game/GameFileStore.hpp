@@ -4,12 +4,13 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
-#include "../../layout/components/GameField/GameField.hpp"
-#include "../../layout/components/GameField/components/CountBar.hpp"
-#include "../../layout/components/GameField/components/PlayerFigure.hpp"
-#include "../../layout/components/GameField/constants/FieldState.hpp"
-#include "../../layout/components/GameField/constants/CurrentMovePlayer.hpp"
+#include "../../layout/components/Game/components/CountBar.hpp"
+#include "../../layout/components/Game/components/PlayerFigure.hpp"
+#include "../../layout/components/Game/constants/FieldState.hpp"
+#include "../../layout/components/Game/constants/Player.hpp"
 #include "../../layout/builders/GameLayoutBuilder.hpp"
+#include "../../model/GameField/GameField.hpp"
+#include "./Path.hpp"
 
 struct GameFileStore {
 
@@ -20,7 +21,5 @@ struct GameFileStore {
     static auto uploadGame(std::string const& filename) -> void;
 
     static auto getGameNumber(std::string const& filename) -> std::string;
-
-private:
 
 };

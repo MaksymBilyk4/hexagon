@@ -1,13 +1,13 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../../../utils/RandomGenerator.hpp"
+#include "../../../util/random/RandomGenerator.hpp"
 
-struct Player {
+struct PlayerData {
 
-    Player();
+    PlayerData();
 
-    Player(int fieldCount, sf::Color const& playerColor);
+    PlayerData(int fieldCount, sf::Color const& playerColor);
 
     auto getFieldCount() const -> int;
 
