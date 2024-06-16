@@ -48,11 +48,13 @@ auto Modal::setPosition(sf::Vector2f const &position) -> void {
 
 auto Modal::setSize(const sf::Vector2f &size) -> void {
 
+    modalBase[0].position = {modalBase[0].position.x, modalBase[0].position.y};
+
     modalBase[1].position = {modalBase[0].position.x + size.x, modalBase[0].position.y};
 
-    modalBase[2].position = {modalBase[1].position.x, modalBase[0].position.y + size.y};
+    modalBase[2].position = {modalBase[0].position.x + size.x, modalBase[0].position.y + size.y};
 
-    modalBase[2].position = {modalBase[0].position.x, modalBase[0].position.y + size.y};
+    modalBase[3].position = {modalBase[0].position.x, modalBase[0].position.y + size.y};
 
 }
 

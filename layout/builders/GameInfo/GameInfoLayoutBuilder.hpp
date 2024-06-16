@@ -18,18 +18,27 @@ struct GameInfoLayoutBuilder {
 
     static auto unbuild() -> void;
 
-    static auto initInfoScreen(sf::RenderWindow& renderWindow) -> void;
+    static auto initGameInfoComponents(sf::RenderWindow& renderWindow) -> void;
 
     static auto buildBestGames() -> void;
 
     static auto buildSavedGames() -> void;
 
+    static auto buildFinishedGameInfo() -> void;
+
     static std::vector<std::unique_ptr<Component>> buttons;
+
+    static bool gameFinishedModalOpen;
 
 private:
 
+    static sf::Vector2f middlePos;
+
+    static std::unique_ptr<Modal> infoModal;
 
     static std::unique_ptr<TextWrapper> infoTitle;
+
+    static std::unique_ptr<Button> infoLeaveButton;
 
     static std::vector<std::unique_ptr<Component>> components;
 

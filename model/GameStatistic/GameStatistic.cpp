@@ -9,7 +9,8 @@ auto GameStatistic::resetGameStatistic() -> void {
     GameField::playerTwo->setFieldCount(3);
     GameField::currentMovePlayer = Player::FIRST;
     GameField::movePlayerLabel->setText("Current Player: 1");
-    GameField::freeSpaceLabel->setText("Free Space Left: 52");
+    GameField::movePlayerLabel->setColor(GameField::playerOne->getPlayerColor());
+    GameField::freeSpaceLabel->setText("Free Space Left: 58");
 
     GameField::playerOneCountBar->setCountedItems(3);
     GameField::playerTwoCountBar->setCountedItems(3);
@@ -24,7 +25,7 @@ auto GameStatistic::resetGameStatistic() -> void {
 
     secondPlayerAte = 0;
 
-    spaceLeft = 52;
+    spaceLeft = 58;
 
     winner = Player::FIRST;
 

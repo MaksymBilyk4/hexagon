@@ -1,13 +1,11 @@
 fix:
-- hover cursor
-- bot eats ultra fast and eat himself
+- hover cursor on buttons
 
 layout:
 - background click
 - background of saved best/saved
 
 todo:
-- alert about illegal moves
 - bot
 - best games mechanics
 - end of the game and display winner
@@ -16,3 +14,5 @@ todo:
 DONE:
 - save to file a game mode which was chosen + game statistics (summary)
 - text on text when saving to a file
+- alert about illegal moves
+- bot eats ultra fast and eat himself

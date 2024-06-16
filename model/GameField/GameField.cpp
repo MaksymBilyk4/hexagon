@@ -1,9 +1,6 @@
 #include "./GameField.hpp"
 
-std::vector<std::vector<FieldState>> GameField::stateMatrix = std::vector<std::vector<FieldState>>(9,
-                                                                                                   std::vector<FieldState>(
-                                                                                                           9,
-                                                                                                           FieldState::NOT_EXIST));
+std::vector<std::vector<FieldState>> GameField::stateMatrix = std::vector<std::vector<FieldState>>(9, std::vector<FieldState>(9, FieldState::NOT_EXIST));
 
 std::vector<std::vector<std::unique_ptr<Component>>> GameField::fieldMatrix; // Hexagon components
 std::vector<std::vector<std::unique_ptr<Component>>> GameField::playerFigures; // Figures
@@ -18,15 +15,15 @@ std::unique_ptr<TextWrapper> GameField::gameModeLabel;
 std::unique_ptr<CountBar> GameField::playerOneCountBar;
 std::unique_ptr<CountBar> GameField::playerTwoCountBar;
 
-std::unique_ptr<IllegalMove> GameField::illegalMoveModal;
-
 Player GameField::currentMovePlayer;
 Component *GameField::currentSelected = nullptr;
 
 int GameField::gainedFields;
-bool GameField::drawState;
+bool GameField::drawState = false;
 bool GameField::playerFigureSelected = false;
 std::string GameField::currentLoadedGame;
+bool GameField::isLocked = true;
+bool GameField::isGameFinished = false;
 
 auto GameField::initGameItems() -> void {
     fieldMatrix.resize(9);
@@ -44,41 +41,68 @@ auto GameField::initGameItems() -> void {
 
 auto GameField::listenFieldClick(sf::Vector2i const &mousePosition) -> void {
 
+//    if (isGameFinished) return;
+    if (GameInfoLayoutBuilder::gameFinishedModalOpen) {
+        GameInfoLayoutBuilder::gameFinishedModalOpen = true;
+        return;
+    }
+
     if (IllegalMove::lockBackground) {
         IllegalMove::lockBackground = false;
         return;
+    } else if (QuitGame::lockBackground) {
+        QuitGame::lockBackground = false;
+        return;
     }
+
+    if (isLocked) {
+        isLocked = false;
+        return;
+    }
+
+
     for (auto i = 0; i < fieldMatrix.size(); ++i)
         for (auto j = 0; j < fieldMatrix[i].size(); ++j) {
-            if (fieldMatrix[i][j] != nullptr && fieldMatrix[i][j]->isMouseOver(mousePosition))
-                if (GameStatistic::gameMode == GameMode::PLAYER_VS_PLAYER ||
-                    (GameStatistic::gameMode == GameMode::PLAYER_VS_COMPUTER && currentMovePlayer == Player::FIRST)) {
-                    if (static_cast<int>(stateMatrix[i][j]) == static_cast<int>(currentMovePlayer))
-                        handleFieldClick(i, j, fieldMatrix[i][j].get());
-                    else if (playerFigureSelected && stateMatrix[i][j] == FieldState::EMPTY)
-                        handlePlayerStep(i, j, fieldMatrix[i][j].get());
+            if (fieldMatrix[i][j] != nullptr && fieldMatrix[i][j]->isMouseOver(mousePosition)) {
+                if (GameStatistic::gameMode == GameMode::PLAYER_VS_PLAYER || (GameStatistic::gameMode == GameMode::PLAYER_VS_COMPUTER && currentMovePlayer == Player::FIRST) || GameField::isGameFinished) {
+                    if (static_cast<int>(stateMatrix[i][j]) == static_cast<int>(currentMovePlayer)) handleFieldClick(i, j, fieldMatrix[i][j].get());
+                    else if (playerFigureSelected && stateMatrix[i][j] == FieldState::EMPTY) handlePlayerStep(i, j, fieldMatrix[i][j].get());
+                    else if (isGameFinished) {
+                        auto finishedMessage = std::string("You can't do any steps. Game is finished.\nWinner is ");
+                        finishedMessage += (currentMovePlayer == Player::FIRST ? "Player two" : "Player one");
+                        IllegalMove::setTitle("Game is finished");
+                        IllegalMove::setMessage(finishedMessage);
+                        IllegalMove::show();
+                    }
                     else {
                         if (!IllegalMove::isOpened) {
-                            auto currentPlayer = std::string(currentMovePlayer == Player::FIRST ? "Player One" : "Player two");
-                            auto oppositePlayer = std::string(currentMovePlayer == Player::FIRST ? "Player Two" : "Player One");
-                            if (currentSelected && static_cast<int>(stateMatrix[i][j]) != static_cast<int>(currentMovePlayer) && static_cast<int>(stateMatrix[i][j]) > 0) {
-                                illegalMoveModal->setTitle("Illegal move!");
-                                illegalMoveModal->setMessage(currentPlayer + ". You can't eat " + oppositePlayer + " like this!!!");
+                            auto currentPlayer = std::string(
+                                    currentMovePlayer == Player::FIRST ? "Player One" : "Player two");
+                            auto oppositePlayer = std::string(
+                                    currentMovePlayer == Player::FIRST ? "Player Two" : "Player One");
+                            if (currentSelected &&
+                                static_cast<int>(stateMatrix[i][j]) != static_cast<int>(currentMovePlayer) &&
+                                static_cast<int>(stateMatrix[i][j]) > 0) {
+                                IllegalMove::setTitle("Illegal move!");
+                                IllegalMove::setMessage(
+                                        currentPlayer + ". You can't eat " + oppositePlayer + " like this!!!");
                                 IllegalMove::show();
                             } else if (!currentSelected) {
                                 if (stateMatrix[i][j] == FieldState::EMPTY) {
-                                    illegalMoveModal->setTitle("Empty field");
-                                    illegalMoveModal->setMessage(currentPlayer + ", please, choose your figure");
-                                    illegalMoveModal->show();
+                                    IllegalMove::setTitle("Empty field");
+                                    IllegalMove::setMessage(currentPlayer + ", please, choose your figure");
+                                    IllegalMove::show();
                                 } else if (playerFigures[i][j] != nullptr) {
-                                    illegalMoveModal->setTitle("Choose your figure");
-                                    illegalMoveModal->setMessage("It is figure of " + oppositePlayer + "\nTo make a step choose your figure");
-                                    illegalMoveModal->show();
+                                    IllegalMove::setTitle("Choose your figure");
+                                    IllegalMove::setMessage("It is figure of " + oppositePlayer +
+                                                            "\nTo make a step choose your figure");
+                                    IllegalMove::show();
                                 }
                             }
                         }
                     }
                 }
+            }
         }
 }
 
@@ -91,7 +115,6 @@ auto GameField::handlePlayerStep(int clickedRow, int clickedCol, Component *hexa
 
 
     if (clickedHex->getBorderColor() == sf::Color::Green || clickedHex->getBotShortStep()) {
-        fmt::println("move near");
         auto playerFigure = std::make_unique<PlayerFigure>(currentMovePlayer == Player::FIRST ? playerOne->getPlayerColor() : playerTwo->getPlayerColor());
         GameLayoutBuilder::setPlayerFigurePosition(playerFigure.get(), clickedHex->getPosition());
         playerFigures[clickedRow][clickedCol] = std::move(playerFigure);
@@ -126,9 +149,9 @@ auto GameField::handlePlayerStep(int clickedRow, int clickedCol, Component *hexa
     } else {
         if (!IllegalMove::isOpened) {
             auto currentPlayer = std::string(currentMovePlayer == Player::FIRST ? "Player One" : "Player two");
-            illegalMoveModal->setTitle("Illegal Move!");
-            illegalMoveModal->setMessage(currentPlayer + ". Too far, sorry. Not today...\nGo to green or yellow area");
-            illegalMoveModal->show();
+            IllegalMove::setTitle("Illegal Move!");
+            IllegalMove::setMessage(currentPlayer + ". Too far, sorry. Not today...\nGo to green or yellow area");
+            IllegalMove::show();
         }
     }
 
@@ -181,6 +204,13 @@ auto GameField::changePlayer() -> void {
     gainedFields = 0;
     printStateMatrix();
 
+    auto availableSteps = getAllAvailableSteps();
+    auto movePlayer = currentMovePlayer == Player::FIRST ? "First player" : "Second plyaer";
+    fmt::println("{}: all available steps {}",movePlayer, availableSteps);
+
+    if (availableSteps == 0) finishGame(true);
+
+
     if (GameStatistic::gameMode == GameMode::PLAYER_VS_COMPUTER && currentMovePlayer == Player::SECOND) botStep();
 }
 
@@ -195,6 +225,13 @@ auto GameField::botStep() -> void {
             if (stateMatrix[i][j] == FieldState::PLAYER_TWO) {
                 auto coordinates = std::pair<int, int>(i, j);
                 drawBorders(i, j, true);
+
+                auto stepsAvailable = getClickedHexAvailableSteps();
+                if (stepsAvailable == 0) {
+                    clearBorders();
+                    continue;
+                }
+
                 figureStepsMap[coordinates] = getPossibleMoves();
                 clearBorders();
             }
@@ -259,34 +296,6 @@ auto GameField::getMoveData(int row, int col, bool isGreenStep) -> BotMoveData {
     data.enemiesAround = enemies;
     data.gain = enemies;
     data.greenStep = isGreenStep;
-
-//    auto selectedFigures = dynamic_cast<Hexagon*>(currentSelected);
-//    auto selectedRow = selectedFigures->getFieldRow();
-//    auto selectedCol = selectedFigures->getFieldCol();
-//    fmt::println("selected row col: {} {}", selectedRow, selectedCol);
-
-
-//    auto oppositePlayerState = currentMovePlayer == Player::FIRST ? FieldState::PLAYER_TWO : FieldState::PLAYER_ONE;
-//    bool foundLoose = false;
-
-//    if (!isGreenStep) {
-//        auto startRow = selectedRow - 3;
-//        auto startCol = selectedCol - 3;
-//        auto endRow = selectedRow + 3;
-//        auto endCol = selectedCol + 3;
-//        for (auto i = startRow; i <= endRow; ++i) {
-//            if (i < 0 || i >= fieldMatrix.size()) continue;
-//            for (auto j = startCol; j <= endCol; ++j) {
-//                if (j < 0 || j >= fieldMatrix.size()) continue;
-//                if (stateMatrix[i][j] == oppositePlayerState && canMoveTo(i, j, selectedFigures->getFieldRow(), selectedFigures->getFieldCol())) {
-//                    data.looseIfGo = getEatEnemies(i, j);
-//                    foundLoose = true;
-//                    break;
-//                }
-//            }
-//            if (foundLoose) break;
-//        }
-//    }
 
     return data;
 }
@@ -418,6 +427,81 @@ auto GameField::eatEnemy(Hexagon *clickedHex) -> void {
         }
 }
 
+auto GameField::finishGame(bool buildDialog) -> void {
+    auto winner = currentMovePlayer == Player::FIRST ? FieldState::PLAYER_TWO : FieldState::PLAYER_ONE;
+    auto winnerString = winner == FieldState::PLAYER_ONE ? "Winner: Player One" : "Winner: Player Two";
+    auto playerOneColor = playerOne->getPlayerColor();
+    auto playerTwoColor = playerTwo->getPlayerColor();
+
+    for (auto row = 0; row < fieldMatrix.size(); ++row) {
+        for (auto col = 0; col < fieldMatrix[row].size(); ++col) {
+            if (fieldMatrix[row][col] != nullptr) {
+                if (stateMatrix[row][col] != winner) {
+                    auto figure = std::make_unique<PlayerFigure>(
+                        winner == FieldState::PLAYER_ONE ? playerOneColor : playerTwoColor
+                    );
+                    GameLayoutBuilder::setPlayerFigurePosition(figure.get(), fieldMatrix[row][col]->getPosition());
+                    stateMatrix[row][col] = winner;
+                    playerFigures[row][col] = std::move(figure);
+                }
+            }
+        }
+    }
+
+
+
+    if (winner == FieldState::PLAYER_ONE) {
+        playerOneCountBar->setCountedItems(58);
+        movePlayerLabel->setColor(playerOneColor);
+    } else {
+        playerTwoCountBar->setCountedItems(58);
+        movePlayerLabel->setColor(playerTwoColor);
+    }
+
+    freeSpaceLabel->setText("Free space left: 0");
+    movePlayerLabel->setText(winnerString);
+    isGameFinished = true;
+
+    if (buildDialog) {
+        GameInfoLayoutBuilder::buildFinishedGameInfo();
+        GameInfoLayoutBuilder::build();
+    }
+}
+
+auto GameField::getAllAvailableSteps() -> int {
+    auto currentPlayerState = currentMovePlayer == Player::FIRST ? FieldState::PLAYER_ONE : FieldState::PLAYER_TWO;
+    auto allAvailableSteps = 0;
+    for (auto row = 0; row < stateMatrix.size(); ++row)
+        for (auto col = 0; col < stateMatrix[row].size(); ++col) {
+            if (stateMatrix[row][col] == currentPlayerState) {
+                drawBorders(row, col, true);
+                auto availableSteps = getClickedHexAvailableSteps();
+                if (availableSteps > 0) allAvailableSteps++;
+                clearBorders();
+            }
+        }
+
+    return allAvailableSteps;
+}
+
+auto GameField::getClickedHexAvailableSteps() -> int {
+    int availableSteps = -1;
+
+    for (auto const& fieldRow : fieldMatrix)
+        for (auto const &field : fieldRow)
+            if (field != nullptr) {
+                auto hex = dynamic_cast<Hexagon*>(field.get());
+                if (
+                        hex->getBotLongStep() ||
+                        hex->getBotShortStep() ||
+                        hex->getBorderColor() == sf::Color::Green ||
+                        hex->getBorderColor() == sf::Color::Yellow
+                ) availableSteps++;
+            }
+
+    return availableSteps;
+}
+
 auto GameField::drawBorders(int clickedRow, int clickedCol, bool isBot) -> void {
 
     auto rowDifference = int();
@@ -516,6 +600,9 @@ auto GameField::clearBorders() -> void {
 auto GameField::resetGameState() -> void {
 
     GameField::clearBorders();
+    isLocked = true;
+    isGameFinished = false;
+
 
     for (auto &stateRow: stateMatrix)
         for (auto &fieldState: stateRow)

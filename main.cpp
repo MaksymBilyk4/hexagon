@@ -5,7 +5,6 @@
 #include "layout/components/CheckBox/CheckBoxGroup.hpp"
 #include "layout/components/Modal/Modal.hpp"
 #include "layout/components/Game/components/PlayerFigure.hpp"
-#include "layout/components/TextField/TextField.hpp"
 
 #include "layout/builders/BackgroundBuilder.hpp"
 #include "layout/builders/HomeLayoutBuilder.hpp"
@@ -17,6 +16,7 @@
 #include "util/font/FontHolder.hpp"
 #include "util/event/EventHandler.hpp"
 
+
 int main() {
     auto window = sf::RenderWindow(sf::VideoMode(1400, 1000), "Hexxagon", sf::Style::Default);
     window.setFramerateLimit(60);
@@ -26,16 +26,16 @@ int main() {
 
     Cursor::setAppWindow(window);
 
-
     BackgroundBuilder::generateFigures(window);
 
     HomeLayoutBuilder::initHomeScreen(window);
 
-    GameInfoLayoutBuilder::initInfoScreen(window);
+    GameInfoLayoutBuilder::initGameInfoComponents(window);
 
     GameLayoutBuilder::prepareGameField(window);
 
     GameField::printStateMatrix();
+    GameField::printFieldMatrix();
 
     HomeLayoutBuilder::build();
 
@@ -54,6 +54,7 @@ int main() {
             Drawer::draw(PlayerFigure::playerFigures, window);
             Drawer::draw(GameField::fieldMatrix, window);
             Drawer::draw(GameField::playerFigures, window);
+            Drawer::draw(Hexagon::items, window);
             GameField::playerOneCountBar->draw(window);
             GameField::movePlayerLabel->draw(window);
             GameField::playerTwoCountBar->draw(window);
@@ -64,13 +65,13 @@ int main() {
 
         Drawer::draw(Modal::modals, window);
 
-        Drawer::draw(TextField::textFields, window);
-
         Drawer::draw(Button::buttons, window);
 
         Drawer::draw(TextWrapper::textWrappers, window);
 
         Drawer::draw(CheckBoxGroup::groups, window);
+
+//        Drawer::draw(hexes, window);
 
         window.display();
     }

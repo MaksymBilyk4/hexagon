@@ -2,7 +2,7 @@
 
 #include "./Cursor.hpp"
 
-sf::RenderWindow* Cursor::appWindow = nullptr;
+sf::RenderWindow *Cursor::appWindow = nullptr;
 sf::Cursor Cursor::appCursor;
 CursorHolder Cursor::currentHolder = CursorHolder::NO_ONE;
 
@@ -19,11 +19,9 @@ auto Cursor::setAppWindow(sf::RenderWindow &renderWindow) -> void {
 }
 
 auto Cursor::setSimpleCursor() -> void {
-    if (appCursor.loadFromSystem(sf::Cursor::Arrow))
-        appWindow->setMouseCursor(appCursor);
+    if (appCursor.loadFromSystem(sf::Cursor::Arrow)) appWindow->setMouseCursor(appCursor);
 }
 
 auto Cursor::setHandCursor() -> void {
-    if (appCursor.loadFromSystem(sf::Cursor::Hand))
-        appWindow->setMouseCursor(appCursor);
+    if (appCursor.loadFromSystem(sf::Cursor::Hand)) appWindow->setMouseCursor(appCursor);
 }

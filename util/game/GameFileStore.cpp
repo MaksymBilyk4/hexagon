@@ -160,6 +160,7 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
     mode += GameStatistic::gameMode == GameMode::PLAYER_VS_PLAYER ? "PLAYER VS PLAYER" : "PLAYER VS COMPUTER";
     GameField::gameModeLabel->setText(mode);
 
+
     GameField::playerOneCountBar->setCountedItems(playerOneFigures);
     GameField::playerTwoCountBar->setCountedItems(playerTwoFigures);
     GameField::playerOne->setFieldCount(playerOneFigures);
@@ -170,6 +171,7 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
     GameField::printFigureMatrix();
     GameField::printStateMatrix();
     GameStatistic::printStatistic();
+    GameField::finishGame(false);
 
     auto loadedGame = GameFileStore::getGameNumber(filename);
     GameField::currentLoadedGame = loadedGame;

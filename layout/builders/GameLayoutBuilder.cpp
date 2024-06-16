@@ -1,77 +1,82 @@
 #include "./GameLayoutBuilder.hpp"
 
-std::vector<std::unique_ptr<Component>> GameLayoutBuilder::components;
-std::vector<std::unique_ptr<Component>> GameLayoutBuilder::exitLayoutComponents;
+std::unique_ptr<Button> GameLayoutBuilder::stats;
+std::unique_ptr<Button> GameLayoutBuilder::quitButton;
+
 
 auto GameLayoutBuilder::build(bool isFileBuild) -> void {
     GameField::drawState = true;
     auto currentMode = std::string("Game mode: ");
-    if (!isFileBuild) currentMode += HomeLayoutBuilder::modeGroup->getActiveCheckBoxActionContext() == std::to_string(GameMode::PLAYER_VS_PLAYER) ? "PLAYER VS PLAYER" : "PLAYER VS COMPUTER";
-    else currentMode += GameStatistic::gameMode == GameMode::PLAYER_VS_PLAYER ? "PLAYER VS PLAYER" : "PLAYER VS COMPUTER";
+    if (!isFileBuild) {
+        currentMode += HomeLayoutBuilder::modeGroup->getActiveCheckBoxActionContext() ==
+                       std::to_string(GameMode::PLAYER_VS_PLAYER) ? "PLAYER VS PLAYER" : "PLAYER VS COMPUTER";
+        GameStatistic::gameMode = HomeLayoutBuilder::modeGroup->getActiveCheckBoxActionContext() ==
+                                  std::to_string(GameMode::PLAYER_VS_PLAYER) ? GameMode::PLAYER_VS_PLAYER
+                                                                             : GameMode::PLAYER_VS_COMPUTER;
+    } else
+        currentMode += GameStatistic::gameMode == GameMode::PLAYER_VS_PLAYER ? "PLAYER VS PLAYER" : "PLAYER VS COMPUTER";
     GameField::gameModeLabel->setText(currentMode);
-    GameStatistic::gameMode = HomeLayoutBuilder::modeGroup->getActiveCheckBoxActionContext() == std::to_string(GameMode::PLAYER_VS_PLAYER) ? GameMode::PLAYER_VS_PLAYER : GameMode::PLAYER_VS_COMPUTER;
 
-    for (auto const& comp : components)
-        comp->show();
-
+    if (GameField::isGameFinished) {
+        stats->show();
+    }
+    quitButton->show();
 }
 
 auto GameLayoutBuilder::unbuild() -> void {
     GameField::drawState = false;
-
-    for (auto const& comp : components)
-        comp->hide();
+    stats->hide();
+    quitButton->hide();
 }
 
 auto GameLayoutBuilder::prepareGameField(sf::RenderWindow &renderWindow) -> void {
 
     GameField::initGameItems();
-    GameLayoutBuilder::makeExitModal(renderWindow);
-    GameLayoutBuilder::makeIllegalMoveModal(renderWindow);
-    GameLayoutBuilder::makeLeaveGameButton();
-    GameLayoutBuilder::makeCurrentPlayerMoveLabel();
-    GameLayoutBuilder::makePlayersCountBar();
+    QuitGame::buildQuitGameLayout(renderWindow);
+    IllegalMove::buildIllegalMoveLayout(renderWindow);
+    GameLayoutBuilder::buildGameLayoutItems();
 
-    auto leftXPosition = static_cast<float>(renderWindow.getSize().x / 4 - Hexagon::defaultRadius / 4);
-    auto rightXPosition = static_cast<float>(renderWindow.getSize().x - 28 * Hexagon::defaultRadius / 4);
-    auto yPosition = (renderWindow.getSize().y / 4.96);
-    auto counter = 1;
-    int reversed = 8;
+    auto hexHeight = 105.f;
+    auto hexHeightHalf = hexHeight / 2;
+    auto puzzleGap = 90.f;
 
-    for (int i = 5; i < 10; i++) {
+    auto startXPos = 325.f;
+    auto startYPos = 200.f;
 
-        for (auto j = 0; j < i; j++) {
-            if (i == 8 && j == 4 || i == 9 && j == 3) {
-                yPosition += Hexagon::defaultRadius * 2;
+    auto iterationYPos = startYPos;
+    auto reduceHexCount = 1;
+
+    auto updateCoordinates =
+            [&iterationYPos, &startXPos, hexHeightHalf, puzzleGap]
+                    (int currentCol) -> void {
+                iterationYPos = currentCol < 4 ? iterationYPos - hexHeightHalf : iterationYPos + hexHeightHalf;
+                startXPos += puzzleGap;
+            };
+
+    for (int row = 0; row <= 9; ++row) {
+        startXPos = 325.f;
+        startYPos += hexHeight;
+        for (int col = 0; col <= 9; ++col) {
+            if (row == 3 && col == 4 || (row == 4 && (col == 3 || col == 5))) {
+                updateCoordinates(col);
+                continue;
+            } else if (row > 4 && (col < reduceHexCount || col >= 9 - reduceHexCount)) {
+                updateCoordinates(col);
                 continue;
             }
 
-            auto leftFieldItem = std::make_unique<Hexagon>();
-            leftFieldItem->setPosition({leftXPosition, static_cast<float>(yPosition)});
-
-            if (i != 9) {
-                auto rightFieldItem = std::make_unique<Hexagon>();
-                rightFieldItem->setPosition({rightXPosition, static_cast<float >(yPosition)});
-                rightFieldItem->setFieldRow(j);
-                rightFieldItem->setFieldCol(reversed);
-                GameField::fieldMatrix[j][reversed] = std::move(rightFieldItem);
-                GameField::stateMatrix[j][reversed] = FieldState::EMPTY;
-            }
-
-            leftFieldItem->setFieldRow(j);
-            leftFieldItem->setFieldCol(i - 5);
-            GameField::fieldMatrix[j][i - 5] = std::move(leftFieldItem);
-            GameField::stateMatrix[j][i - 5] = FieldState::EMPTY;
-
-            yPosition += Hexagon::defaultRadius * 2;
+            auto hex = std::make_unique<Hexagon>();
+            hex->setPosition({startXPos, iterationYPos});
+            hex->setFieldRow(row);
+            hex->setFieldCol(col);
+            GameField::fieldMatrix[row][col] = std::move(hex);
+            GameField::stateMatrix[row][col] = FieldState::EMPTY;
+            updateCoordinates(col);
         }
-
-        counter = counter + 2;
-        leftXPosition = leftXPosition + Hexagon::defaultRadius * 2 - 11;
-        rightXPosition = rightXPosition - Hexagon::defaultRadius * 2 + 11;
-        yPosition = (renderWindow.getSize().y / 4.5) - counter * Hexagon::defaultRadius / 2;
-        reversed--;
+        iterationYPos = startYPos;
+        if (row > 4) reduceHexCount++;
     }
+
     initDefaultPlayersPositions();
 }
 
@@ -89,9 +94,10 @@ auto GameLayoutBuilder::initDefaultPlayersPositions() -> void {
 
     for (auto i = 0; i < GameField::stateMatrix.size(); ++i)
         for (auto j = 0; j < GameField::stateMatrix[i].size(); ++j) {
-            if (GameField::stateMatrix[i][j] != FieldState::EMPTY && GameField::stateMatrix[i][j] != FieldState::NOT_EXIST) {
+            if (GameField::stateMatrix[i][j] != FieldState::EMPTY &&
+                GameField::stateMatrix[i][j] != FieldState::NOT_EXIST) {
                 auto playerFigure = std::make_unique<PlayerFigure>(
-                    GameField::stateMatrix[i][j] == FieldState::PLAYER_ONE ? playerOneColor : playerTwoColor
+                        GameField::stateMatrix[i][j] == FieldState::PLAYER_ONE ? playerOneColor : playerTwoColor
                 );
 
                 auto hexPosition = GameField::fieldMatrix[i][j]->getPosition();
@@ -102,118 +108,43 @@ auto GameLayoutBuilder::initDefaultPlayersPositions() -> void {
 
 }
 
-auto GameLayoutBuilder::setPlayerFigurePosition(PlayerFigure* figure, sf::Vector2f const& hexPosition) -> void {
+auto GameLayoutBuilder::setPlayerFigurePosition(PlayerFigure *figure, sf::Vector2f const &hexPosition) -> void {
     figure->setPosition({
-        hexPosition.x - 15,
-        hexPosition.y + 30
-    });
+                                hexPosition.x - 15,
+                                hexPosition.y + 30
+                        });
 }
 
-
-// DRAWING COMPONENTS =================================================================================================
-auto GameLayoutBuilder::makeIllegalMoveModal(sf::RenderWindow& renderWindow) -> void {
-    auto modal = std::make_unique<Modal>(renderWindow, 850, 500);
-    modal->setVerticalGradient(sf::Color(0,0,0,200), sf::Color(0,0,0,200));
-
-    auto title = std::make_unique<TextWrapper>();
-    title->setPosition({400, 325});
-    title->setFontSize(40);
-    title->setFont(Fonts::SIXTY_FOUR_REGULAR_FONT);
-    title->setColor(sf::Color::White);
-
-    auto message = std::make_unique<TextWrapper>();
-    message->setColor(sf::Color::White);
-    message->setFontSize(25);
-    message->setPosition({400, 425});
-    message->setFont(Fonts::ROBOTO_MEDIUM_FONT);
-
-    auto closeButton = std::make_unique<Button>(sf::Vector2f(400, 550), sf::Vector2f(200, 50), "OK. Close!");
-    closeButton->setButtonTextColor(sf::Color::White);
-    closeButton->setBorderColor(sf::Color::Green);
-    closeButton->setColor(sf::Color::Black);
-    closeButton->bindOnClick([]() -> void {
-        GameField::illegalMoveModal->hide();
+auto GameLayoutBuilder::buildGameLayoutItems() -> void {
+    auto statsButton = std::make_unique<Button>(sf::Vector2f(1050, 850), sf::Vector2f(320, 50), "SHOW STATISTICS");
+    statsButton->bindOnClick([]() -> void {
+        if (!QuitGame::isOpened && !IllegalMove::isOpened && !GameInfoLayoutBuilder::gameFinishedModalOpen) {
+            GameInfoLayoutBuilder::buildFinishedGameInfo();
+            GameInfoLayoutBuilder::build();
+        }
     });
-    closeButton->setHoverColor(sf::Color::Black);
-    closeButton->setBorderColor(sf::Color::Green);
-    closeButton->setButtonTextColor(sf::Color::Green);
+    statsButton->setButtonTextFontSize(30);
+    statsButton->setButtonTextPosition({statsButton->getButtonTextPosition().x - 30, statsButton->getButtonTextPosition().y});
+    stats = std::move(statsButton);
 
-    IllegalMove::modal = std::move(modal);
-    IllegalMove::title = std::move(title);
-    IllegalMove::message = std::move(message);
-    IllegalMove::closeButton = std::move(closeButton);
-}
 
-auto GameLayoutBuilder::makeLeaveGameButton() -> void {
     auto leaveGameButton = std::make_unique<Button>(sf::Vector2f(150, 850), sf::Vector2f(140, 50), "QUIT");
 
     leaveGameButton->setButtonTextFontSize(30);
-    leaveGameButton->setButtonTextPosition({leaveGameButton->getButtonTextPosition().x - 10, leaveGameButton->getButtonTextPosition().y});
+    leaveGameButton->setButtonTextPosition(
+            {leaveGameButton->getButtonTextPosition().x - 10, leaveGameButton->getButtonTextPosition().y});
 
     leaveGameButton->bindOnClick([]() -> void {
-        for (auto &comp : exitLayoutComponents)
-            comp->show();
+        if (!QuitGame::isOpened && !IllegalMove::isOpened && !GameInfoLayoutBuilder::gameFinishedModalOpen) {
+            QuitGame::show();
+        }
     });
 
-    components.push_back(std::move(leaveGameButton));
-}
-
-auto GameLayoutBuilder::makeExitModal(sf::RenderWindow& renderWindow) -> void {
-    auto modal = std::make_unique<Modal>(renderWindow, 850, 500);
-
-    modal->setVerticalGradient(sf::Color(0,0,0,200), sf::Color(0,0,0,200));
-
-    auto title = std::make_unique<TextWrapper>();
-    title->setText("Really quit the game?");
-    title->setPosition({400, 325});
-    title->setFontSize(30);
-    title->setFont(Fonts::SIXTY_FOUR_REGULAR_FONT);
-    title->setColor(sf::Color::White);
-
-    auto yesSaveBtn = std::make_unique<Button>(sf::Vector2f(400, 550), sf::Vector2f(300, 40), "Yes. Save");
-    auto yesNoSaveBtn = std::make_unique<Button>(sf::Vector2f(750, 550), sf::Vector2f(300, 40), "Yes. No save");
-
-    auto noBtn = std::make_unique<Button>(sf::Vector2f(400, 675), sf::Vector2f(650, 40), "No");
-
-    noBtn->bindOnClick([]() -> void {
-        for (auto &comp : exitLayoutComponents)
-            comp->hide();
-    });
-
-    yesNoSaveBtn->bindOnClick([]() -> void {
-        GameField::resetGameState();
-        if (!GameField::currentLoadedGame.empty()) GameField::currentLoadedGame = "";
-        for (auto &comp : exitLayoutComponents)
-            comp->hide();
-        GameLayoutBuilder::unbuild();
-        HomeLayoutBuilder::build();
-    });
-
-    yesSaveBtn->bindOnClick([]() -> void {
-        if (!GameField::currentLoadedGame.empty()) GameFileStore::saveOldGame(GameField::currentLoadedGame);
-        else GameFileStore::saveNewGame();
-        GameField::resetGameState();
-
-        for (auto &comp : exitLayoutComponents)
-            comp->hide();
-        GameLayoutBuilder::unbuild();
-        HomeLayoutBuilder::build();
-    });
-
-
-    exitLayoutComponents.push_back(std::move(yesSaveBtn));
-    exitLayoutComponents.push_back(std::move(yesNoSaveBtn));
-    exitLayoutComponents.push_back(std::move(noBtn));
-    exitLayoutComponents.push_back(std::move(modal));
-    exitLayoutComponents.push_back(std::move(title));
-}
-
-auto GameLayoutBuilder::makeCurrentPlayerMoveLabel() -> void {
     auto currentMoveLabel = std::make_unique<TextWrapper>(sf::Vector2f(1100, 750), "Current player: 1");
     currentMoveLabel->setColor(GameField::playerOne->getPlayerColor());
     currentMoveLabel->setFontSize(30);
 
-    auto freeSpace = std::make_unique<TextWrapper>(sf::Vector2f(1100, 800), "Free Space Left: 52");
+    auto freeSpace = std::make_unique<TextWrapper>(sf::Vector2f(1100, 800), "Free Space Left: 58");
     freeSpace->setColor(sf::Color::White);
     freeSpace->setFontSize(30);
 
@@ -222,15 +153,17 @@ auto GameLayoutBuilder::makeCurrentPlayerMoveLabel() -> void {
     gameModeL->setColor(sf::Color::White);
     gameModeL->setFontSize(26);
 
-    GameField::gameModeLabel = std::move(gameModeL);
-    GameField::freeSpaceLabel = std::move(freeSpace);
-    GameField::movePlayerLabel = std::move(currentMoveLabel);
-}
-
-auto GameLayoutBuilder::makePlayersCountBar() -> void {
-    auto playerOneBar = std::make_unique<CountBar>(sf::Vector2f(1270, 600), GameField::playerOne->getPlayerColor(), GameField::playerOne->getFieldCount());
-    auto playerTwoBar = std::make_unique<CountBar>(sf::Vector2f(1270, 675), GameField::playerTwo->getPlayerColor(), GameField::playerTwo->getFieldCount());
+    auto playerOneBar = std::make_unique<CountBar>(sf::Vector2f(1270, 600), GameField::playerOne->getPlayerColor(),
+                                                   GameField::playerOne->getFieldCount());
+    auto playerTwoBar = std::make_unique<CountBar>(sf::Vector2f(1270, 675), GameField::playerTwo->getPlayerColor(),
+                                                   GameField::playerTwo->getFieldCount());
 
     GameField::playerOneCountBar = std::move(playerOneBar);
     GameField::playerTwoCountBar = std::move(playerTwoBar);
+
+    GameField::gameModeLabel = std::move(gameModeL);
+    GameField::freeSpaceLabel = std::move(freeSpace);
+    GameField::movePlayerLabel = std::move(currentMoveLabel);
+
+    quitButton = std::move(leaveGameButton);
 }

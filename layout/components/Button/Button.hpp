@@ -58,6 +58,10 @@ struct Button : Box {
 
     auto getButtonTextLetterSpacing() const -> float;
 
+    auto getText() const -> std::string;
+
+    auto getIsCursorOver() const -> bool;
+
     auto setHoverColor(sf::Color const& color) -> void;
 
     auto setHoverBorderColor(sf::Color const& color) -> void;
@@ -71,6 +75,10 @@ struct Button : Box {
     auto setButtonTextColor(sf::Color const& color) -> void;
 
     auto setButtonTextLetterSpacing(float letterSpacing) -> void;
+
+    auto setIsCursorOver(bool state) -> void;
+
+    auto setText(std::string const& text) -> void;
 
     auto bindOnClick(std::function<void()> const &onButtonClickHandler) -> void;
 
@@ -95,6 +103,8 @@ struct Button : Box {
     static std::vector<std::unique_ptr<Component>> buttons;
 
 private:
+
+    bool isCursorOver;
 
     std::function<void()> clickHandler;
 

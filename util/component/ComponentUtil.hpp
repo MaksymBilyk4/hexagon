@@ -7,16 +7,13 @@
 #include "fmt/core.h"
 #include "fmt/format.h"
 #include "../../layout/components/Component.hpp"
+#include "../cursor/Cursor.hpp"
 
 struct ComponentUtil {
 
     static auto listenOnMouseClick(std::vector<std::unique_ptr<Component>> const& components, sf::Vector2i const& mousePosition) -> void;
 
     static auto listenOnMouseMove(std::vector<std::unique_ptr<Component>> const& components, sf::Vector2i const& mousePosition) -> void;
-
-    static auto hide(std::vector<std::unique_ptr<Component>> &components, Component &component) -> void;
-
-    static auto show(std::vector<std::unique_ptr<Component>> &components, Component &component) -> void;
 
     static auto isMouseOver(sf::Vector2f const &elementPosition, sf::Vector2f const &elementSize, sf::Vector2i const &mousePosition) -> bool;
 

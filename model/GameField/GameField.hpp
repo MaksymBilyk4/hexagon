@@ -3,16 +3,19 @@
 #include <vector>
 #include <memory>
 #include <map>
-#include "fmt/core.h"
+#include <fmt/core.h>
+
+#include "../../layout/components/Game/components/ModalLayout/IllegalMove.hpp"
 #include "../../layout/components/Player/PlayerData.hpp"
 #include "../../layout/components/Game/constants/FieldState.hpp"
 #include "../../layout/components/Game/constants/Player.hpp"
 #include "../../layout/components/Game/components/PlayerFigure.hpp"
 #include "../../layout/components/Game/components/Hexagon.hpp"
 #include "../../layout/components/Game/components/CountBar.hpp"
-#include "../../layout/components/Game/components/IllegalMove.hpp"
 #include "../../layout/builders/GameLayoutBuilder.hpp"
 #include "../GameStatistic/GameStatistic.hpp"
+#include "../../util/game/GameFileStore.hpp"
+#include "../../layout/components/Game/components/ModalLayout/IllegalMove.hpp"
 #include "./BotMoveData.hpp"
 
 struct GameField {
@@ -28,6 +31,12 @@ struct GameField {
     static auto getMoveData(int row, int col, bool isGreenStep) -> BotMoveData;
 
     static auto getEatEnemies(int row, int col) -> int;
+
+    static auto getAllAvailableSteps() -> int;
+
+    static auto getClickedHexAvailableSteps() -> int;
+
+    static auto finishGame(bool buildDialog) -> void;
 
     static auto canMoveTo(int fromRow, int toRow, int fromCol, int toCol) -> bool;
 
@@ -54,8 +63,6 @@ struct GameField {
     static std::unique_ptr<TextWrapper> freeSpaceLabel;
     static std::unique_ptr<TextWrapper> gameModeLabel;
 
-    static std::unique_ptr<IllegalMove> illegalMoveModal;
-
     static Player currentMovePlayer;
     static std::string currentLoadedGame;
 
@@ -63,6 +70,9 @@ struct GameField {
     static bool playerFigureSelected;
     static bool drawState;
     static Component* currentSelected;
+
+    static bool isLocked;
+    static bool isGameFinished;
 
 private:
     static auto handleFieldClick(int row, int col, Component* hexagon) -> void;
@@ -73,5 +83,4 @@ private:
     static auto drawBorders(int clickedRow, int clickedCol, bool isBot) -> void;
 
     static auto changePlayer() -> void;
-
 };

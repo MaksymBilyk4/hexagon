@@ -11,8 +11,9 @@
 #include "../components/Game/components/CountBar.hpp"
 #include "../components/Button/Button.hpp"
 #include "../components/Game/constants/GameMode.hpp"
-#include "../../util/Game/GameFileStore.hpp"
 #include "./HomeLayoutBuilder.hpp"
+#include "../components/Game/components/ModalLayout/QuitGame.hpp"
+#include "../components/Game/components/ModalLayout/IllegalMove.hpp"
 
 struct GameLayoutBuilder {
 
@@ -24,22 +25,15 @@ struct GameLayoutBuilder {
 
     static auto setPlayerFigurePosition(PlayerFigure* figure, sf::Vector2f const& hexPosition) -> void;
 
-    static auto makeIllegalMoveModal(sf::RenderWindow &renderWindow) -> void;
-
     static auto initDefaultPlayersPositions() -> void;
+
+    static auto build2() -> void;
+
+    static std::unique_ptr<Button> quitButton;
+    static std::unique_ptr<Button> stats;
 
 private:
 
+    static auto buildGameLayoutItems() -> void;
 
-    static auto makeLeaveGameButton() -> void;
-
-    static auto makeExitModal(sf::RenderWindow& renderWindow) -> void;
-
-    static auto makeCurrentPlayerMoveLabel() -> void;
-
-    static auto makePlayersCountBar() -> void;
-
-    static std::vector<std::unique_ptr<Component>> components;
-
-    static std::vector<std::unique_ptr<Component>> exitLayoutComponents;
 };

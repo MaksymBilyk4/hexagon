@@ -15,7 +15,7 @@ struct GameStatistic {
 
     static inline int secondPlayerAte = 0;
 
-    static inline int spaceLeft = 52;
+    static inline int spaceLeft = 58;
 
     static inline Player winner = Player::FIRST;
 

@@ -51,12 +51,12 @@ add_executable(hexagon main.cpp
         layout/components/Game/components/CountBar.cpp
         layout/builders/GameInfo/GameInfoLayoutBuilder.cpp
         layout/components/Game/constants/GameMode.hpp
-        layout/components/TextField/TextField.cpp
         util/game/GameFileStore.cpp
         util/game/Path.hpp
         model/GameStatistic/GameStatistic.cpp
-        layout/components/Game/components/IllegalMove.cpp
+        layout/components/Game/components/ModalLayout/IllegalMove.cpp
         model/GameField/BotMoveData.cpp
+        layout/components/Game/components/ModalLayout/QuitGame.cpp
 )
 add_executable(deb debug.cpp)
 target_link_libraries(hexagon sfml-graphics)

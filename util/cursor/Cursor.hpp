@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include "./CursorHolder.hpp"
+#include <fmt/core.h>
 
 struct Cursor {
 

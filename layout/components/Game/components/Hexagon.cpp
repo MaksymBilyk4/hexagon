@@ -22,7 +22,7 @@ auto Hexagon::getPosition() const -> sf::Vector2f {
 }
 
 auto Hexagon::getSize() const -> sf::Vector2f {
-    return hexagon.getGlobalBounds().getSize();
+    return sf::Vector2f(defaultRadius + getBorderWidth(), defaultRadius + getBorderWidth());
 }
 
 auto Hexagon::getFieldState() const -> FieldState {

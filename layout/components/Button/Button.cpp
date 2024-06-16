@@ -14,8 +14,8 @@ Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, const std
     innerBorderColorCopy = sf::Color(194, 31, 188);
     buttonBase.setOutlineColor(innerBorderColorCopy);
 
-    hoverColor = sf::Color(255,255,255);
-    hoverBorderColor = sf::Color(194,31,188);
+    hoverColor = sf::Color(255, 255, 255);
+    hoverBorderColor = sf::Color(194, 31, 188);
 
     buttonText.setText(btnText);
     buttonText.setFontSize(20);
@@ -23,7 +23,7 @@ Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, const std
     buttonText.setFont(Fonts::ROBOTO_MEDIUM_FONT);
     buttonText.centerBothAxis(position, size);
 
-    clickHandler = [this]() -> void {fmt::println("Button on click. Component: {}", getComponentId());};
+    clickHandler = [this]() -> void { fmt::println("Button on click. Component: {}", getComponentId()); };
 }
 
 
@@ -106,6 +106,14 @@ auto Button::getButtonTextLetterSpacing() const -> float {
     return buttonText.getLetterSpacing();
 }
 
+auto Button::getText() const -> std::string {
+    return buttonText.getText();
+}
+
+auto Button::getIsCursorOver() const -> bool {
+    return isCursorOver;
+}
+
 auto Button::setHoverColor(const sf::Color &color) -> void {
     hoverColor = color;
 }
@@ -134,6 +142,14 @@ auto Button::setButtonTextLetterSpacing(float letterSpacing) -> void {
     buttonText.setLetterSpacing(letterSpacing);
 }
 
+auto Button::setText(const std::string &text) -> void {
+    buttonText.setText(text);
+}
+
+auto Button::setIsCursorOver(bool state) -> void {
+    isCursorOver = state;
+}
+
 auto Button::bindOnClick(const std::function<void()> &onButtonClickHandler) -> void {
     clickHandler = onButtonClickHandler;
 }
@@ -144,19 +160,23 @@ auto Button::onClick() -> void {
 }
 
 auto Button::onMouseOver() -> void {
-    if (Cursor::getCurrentHolder() == CursorHolder::BUTTON || Cursor::getCurrentHolder() == CursorHolder::NO_ONE) {
+    isCursorOver = true;
+    if (Cursor::getCurrentHolder() == CursorHolder::NO_ONE || Cursor::getCurrentHolder() == CursorHolder::BUTTON) {
         Cursor::setCurrentHolder(CursorHolder::BUTTON);
         Cursor::setHandCursor();
+        hover();
     }
-    hover();
 }
 
 auto Button::onMouseLeave() -> void {
-    if (Cursor::getCurrentHolder() == CursorHolder::BUTTON) {
-        Cursor::setCurrentHolder(CursorHolder::NO_ONE);
-        Cursor::setSimpleCursor();
+    if (isCursorOver) {
+        if (Cursor::getCurrentHolder() == CursorHolder::BUTTON) {
+            Cursor::setCurrentHolder(CursorHolder::NO_ONE);
+            Cursor::setSimpleCursor();
+        }
+        isCursorOver = false;
+        unhover();
     }
-    unhover();
 }
 
 auto Button::isMouseOver(const sf::Vector2i &mousePosition) const -> bool {
@@ -173,7 +193,7 @@ auto Button::hide() -> void {
             buttons.begin(),
             buttons.end(),
             [this](std::unique_ptr<Component> const &button) -> bool {
-                 return button->getComponentId() == getComponentId();
+                return button->getComponentId() == getComponentId();
             }
     );
 

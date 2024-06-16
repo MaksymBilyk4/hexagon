@@ -13,24 +13,7 @@ auto ComponentUtil::listenOnMouseMove(const std::vector<std::unique_ptr<Componen
             else comp -> onMouseLeave();
         }
     }
-}
 
-auto ComponentUtil::hide(std::vector<std::unique_ptr<Component>> &components, Component &component) -> void {
-//    auto existenceIterator = std::ranges::find_if(
-//            components.begin(),
-//            components.end(),
-//            [&component](std::unique_ptr<Component> const& compPtr) -> bool {
-//                return &component == compPtr.get();
-//            }
-//    );
-//
-//    if (existenceIterator != components.end())
-//        components.erase(existenceIterator);
-}
-
-auto ComponentUtil::show(std::vector<std::unique_ptr<Component>> &components, Component &component) -> void {
-//    components.push_back(std::make_unique<Component>(component));
-//    component.show();
 }
 
 

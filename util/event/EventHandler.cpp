@@ -25,10 +25,7 @@ auto EventHandler::mouse_click(sf::Window &window) -> void {
 
     ComponentUtil::listenOnMouseClick(Button::buttons, mousePosition);
 
-//    TextField::disableFocus(mousePosition);
-//    ComponentUtil::listenOnMouseClick(TextField::textFields, mousePosition);
-
-    if (!IllegalMove::isOpened && GameField::drawState) {
+    if (!IllegalMove::isOpened && !QuitGame::isOpened && GameField::drawState) {
         GameField::listenFieldClick(mousePosition);
     }
 
