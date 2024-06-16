@@ -2,8 +2,11 @@
 
 #include "SFML/Graphics.hpp"
 
+#include "../../layout/builders/HomeLayoutBuilder.hpp"
+
 #include "../../layout/components/Game/components/ModalLayout/IllegalMove.hpp"
 #include "../../layout/components/Game/components/ModalLayout/QuitGame.hpp"
+#include "../../layout/components/TextField/TextField.hpp"
 #include "../../layout/components/Button/Button.hpp"
 #include "../../layout/components/CheckBox/CheckBoxGroup.hpp"
 #include "../../layout/components/Button/Button.hpp"
@@ -25,5 +28,7 @@ private:
     auto mouse_move(sf::Window &window) -> void;
 
     auto mouse_click(sf::Window &window) -> void;
+
+    auto text_entered(sf::Event event, sf::Window &window) -> void;
 
 };

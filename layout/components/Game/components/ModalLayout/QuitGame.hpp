@@ -13,6 +13,8 @@
 #include "../../../../builders/HomeLayoutBuilder.hpp"
 #include "../../../../builders/GameLayoutBuilder.hpp"
 
+#include "../../../TextField/TextField.hpp"
+
 struct QuitGame {
 
     static auto show() -> void;
@@ -26,5 +28,12 @@ struct QuitGame {
     static bool lockBackground;
 
     static std::vector<std::unique_ptr<Component>> components;
+
+    static std::unique_ptr<TextField> textField;
+
+    static bool isTextFieldDrawAble;
+
+    static std::unique_ptr<Button> confirmSaveButton;
+    static std::unique_ptr<Button> cancelSaveButton;
 
 };

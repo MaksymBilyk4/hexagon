@@ -33,6 +33,13 @@ auto EventHandler::mouse_click(sf::Window &window) -> void {
     ComponentUtil::listenOnMouseClick(CheckBoxGroup::groups, mousePosition);
 }
 
+auto EventHandler::text_entered(sf::Event event, sf::Window &window) -> void {
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) QuitGame::textField->setIsActive(true);
+    QuitGame::textField->onCharEntered(event);
+
+}
+
 
 auto EventHandler::handle_event(sf::Event const &event, sf::Window &window) -> void {
 
@@ -48,6 +55,14 @@ auto EventHandler::handle_event(sf::Event const &event, sf::Window &window) -> v
             break;
         case sf::Event::MouseButtonPressed:
             mouse_click(window);
+            break;
+        case sf::Event::KeyPressed:
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                QuitGame::textField->setIsActive(false);
+            }
+            break;
+        case sf::Event::TextEntered:
+            text_entered(event, window);
             break;
     }
 

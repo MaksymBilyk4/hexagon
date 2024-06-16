@@ -5,6 +5,7 @@
 #include "layout/components/CheckBox/CheckBoxGroup.hpp"
 #include "layout/components/Modal/Modal.hpp"
 #include "layout/components/Game/components/PlayerFigure.hpp"
+#include "layout/components/TextField/TextField.hpp"
 
 #include "layout/builders/BackgroundBuilder.hpp"
 #include "layout/builders/HomeLayoutBuilder.hpp"
@@ -49,7 +50,6 @@ int main() {
 
         BackgroundBuilder::drawBackground(window);
 
-
         if (GameField::drawState) {
             Drawer::draw(PlayerFigure::playerFigures, window);
             Drawer::draw(GameField::fieldMatrix, window);
@@ -71,7 +71,18 @@ int main() {
 
         Drawer::draw(CheckBoxGroup::groups, window);
 
-//        Drawer::draw(hexes, window);
+        Drawer::draw(TextField::textFields, window);
+
+//        if (QuitGame::textField != nullptr && QuitGame::textField->getPosition().x > 0) QuitGame::textField->draw(window);
+
+        if (TextField::textFields.size() == 1) {
+            fmt::println("{}", TextField::textFields[0]->getPosition().x);
+            fmt::println("{}", TextField::textFields[0]->getPosition().y);
+            fmt::println("{}", TextField::textFields[0]->getSize().x);
+            fmt::println("{}", TextField::textFields[0]->getSize().y);
+        }
+
+        if (QuitGame::isTextFieldDrawAble) QuitGame::textField->draw(window);
 
         window.display();
     }

@@ -1,7 +1,7 @@
 #include "./GameFileStore.hpp"
 
 
-auto GameFileStore::saveNewGame() -> void {
+auto GameFileStore::saveNewGame(std::string const& filename) -> void {
 
     auto lastGameId = std::string();
     auto lastGameIdFile = std::fstream(
@@ -11,7 +11,12 @@ auto GameFileStore::saveNewGame() -> void {
     lastGameIdFile.close();
 
     auto savedGameFileName = std::string(Path::GAME_SAVE_PATH);
-    savedGameFileName += "/game_" + lastGameId + ".txt";
+
+    if (filename.empty()) savedGameFileName += "/game_" + lastGameId + ".txt";
+    else {
+        if (filename.ends_with(".txt")) savedGameFileName += "/" + filename;
+        else savedGameFileName += "/" + filename + ".txt";
+    }
 
     auto savedGame = std::ofstream(savedGameFileName, std::ios::out | std::ios::trunc);
 
@@ -35,10 +40,12 @@ auto GameFileStore::saveNewGame() -> void {
     }
 
 
-    lastGameIdFile = std::fstream(
-            Path::NEXT_GAME_TO_SAVE_PATH,
-            std::ios::out | std::ios::trunc);
-    lastGameIdFile << std::to_string(std::stoi(lastGameId) + 1);
+    if (filename.empty()) {
+        lastGameIdFile = std::fstream(
+                Path::NEXT_GAME_TO_SAVE_PATH,
+                std::ios::out | std::ios::trunc);
+        lastGameIdFile << std::to_string(std::stoi(lastGameId) + 1);
+    }
 
 }
 
@@ -171,7 +178,11 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
     GameField::printFigureMatrix();
     GameField::printStateMatrix();
     GameStatistic::printStatistic();
-    GameField::finishGame(false);
+
+    if (playerOneFigures == 58 || playerTwoFigures == 58) {
+        GameField::finishGame(false);
+    }
+
 
     auto loadedGame = GameFileStore::getGameNumber(filename);
     GameField::currentLoadedGame = loadedGame;

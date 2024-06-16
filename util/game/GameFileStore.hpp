@@ -14,7 +14,7 @@
 
 struct GameFileStore {
 
-    static auto saveNewGame() -> void;
+    static auto saveNewGame(std::string const& filename) -> void;
 
     static auto saveOldGame(const std::string &loadedGameNumber) -> void;
 

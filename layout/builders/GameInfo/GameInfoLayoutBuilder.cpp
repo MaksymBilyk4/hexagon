@@ -76,7 +76,7 @@ auto GameInfoLayoutBuilder::buildSavedGames() -> void {
     auto games = std::vector<std::filesystem::path>();
 
     for (auto const& entry : std::filesystem::directory_iterator(path)) {
-        if (entry.path().filename().string().starts_with("game_")) games.push_back(entry.path());
+        games.push_back(entry.path());
     }
 
     auto left = 250.f;

@@ -11,6 +11,7 @@
 #include "./GameInfo/GameInfoLayoutBuilder.hpp"
 #include "../components/Game/constants/GameMode.hpp"
 #include "../../model/GameStatistic/GameStatistic.hpp"
+#include "../components/TextField/TextField.hpp"
 
 struct HomeLayoutBuilder {
 
@@ -21,6 +22,7 @@ struct HomeLayoutBuilder {
     static auto initHomeScreen(sf::RenderWindow &renderWindow) -> void;
 
     static std::unique_ptr<CheckBoxGroup> modeGroup;
+
 private:
 
     static auto makeMainModal(sf::RenderWindow &renderWindow) -> void;
@@ -28,7 +30,6 @@ private:
     static auto makeGameChoiceGroup() -> void;
 
     static std::vector<std::unique_ptr<Component>> components;
-
 
     static std::unique_ptr<Modal> modal;
 
