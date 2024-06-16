@@ -1,14 +1,16 @@
 #include "./CountBar.hpp"
 
-CountBar::CountBar(sf::Vector2f const& position, sf::Color const& barColor, int initCountedNumbers) : countedItems(initCountedNumbers), barColor(barColor) {
+CountBar::CountBar(sf::Vector2f const &position, sf::Color const &barColor, int initCountedNumbers) : countedItems(
+        initCountedNumbers), barColor(barColor) {
     barBase.setPosition(position);
-    barBase.setSize({20, 50});
+    barBase.setSize({30, 50});
     barBase.setFillColor(barColor);
 
     barText.setText(std::to_string(countedItems));
     barText.setColor(sf::Color::White);
-    barText.setPosition({position.x + 25, position.y + 5});
+    barText.setPosition({position.x, position.y + 5});
     barText.setFontSize(30);
+    barText.setColor(sf::Color::White);
 }
 
 auto CountBar::getColor() const -> sf::Color {
@@ -70,6 +72,7 @@ auto CountBar::onMouseLeave() -> void {
 }
 
 auto CountBar::show() -> void {}
+
 auto CountBar::hide() -> void {}
 
 auto CountBar::draw(sf::RenderWindow &renderWindow) -> void {
@@ -81,17 +84,32 @@ auto CountBar::getCountedItems() const -> int {
     return countedItems;
 }
 
+auto CountBar::reset(float xPos) -> void {
+    countedItems = 3;
+    barBase.setSize({30, 50});
+    barBase.setPosition({xPos, barBase.getPosition().y});
+    barText.setText(std::to_string(countedItems));
+}
+
 auto CountBar::setCountedItems(int items) -> void {
     countedItems = items;
+
+//    barBase.setSize({barBase.getSize().x + 2 * countedItems, barBase.getSize().y});
+//    barBase.setPosition({barBase.getPosition().x - 2 * countedItems, barBase.getPosition().y});
+
     barText.setText(std::to_string(countedItems));
 }
 
 auto CountBar::increaseCounter(int number) -> void {
     countedItems += number;
+//    barBase.setSize({barBase.getSize().x + 2 * number, barBase.getSize().y});
+//    barBase.setPosition({barBase.getPosition().x - 2 * number, barBase.getPosition().y});
     barText.setText(std::to_string(countedItems));
 }
 
 auto CountBar::decreaseCounter(int number) -> void {
     countedItems -= number;
+//    barBase.setSize({barBase.getSize().x - 2 * number, barBase.getSize().y});
+//    barBase.setPosition({barBase.getPosition().x + 2 * number, barBase.getPosition().y});
     barText.setText(std::to_string(countedItems));
 }

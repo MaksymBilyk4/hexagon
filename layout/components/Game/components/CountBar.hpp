@@ -47,6 +47,8 @@ struct CountBar : Box{
 
     auto getCountedItems() const -> int;
 
+    auto reset(float xPos) -> void;
+
     auto setCountedItems(int items) -> void;
 
     auto increaseCounter(int number) -> void;

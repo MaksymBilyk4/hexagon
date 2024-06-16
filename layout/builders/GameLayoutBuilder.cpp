@@ -153,9 +153,9 @@ auto GameLayoutBuilder::buildGameLayoutItems() -> void {
     gameModeL->setColor(sf::Color::White);
     gameModeL->setFontSize(26);
 
-    auto playerOneBar = std::make_unique<CountBar>(sf::Vector2f(1270, 600), GameField::playerOne->getPlayerColor(),
+    auto playerOneBar = std::make_unique<CountBar>(sf::Vector2f(1350, 600), GameField::playerOne->getPlayerColor(),
                                                    GameField::playerOne->getFieldCount());
-    auto playerTwoBar = std::make_unique<CountBar>(sf::Vector2f(1270, 675), GameField::playerTwo->getPlayerColor(),
+    auto playerTwoBar = std::make_unique<CountBar>(sf::Vector2f(1350, 675), GameField::playerTwo->getPlayerColor(),
                                                    GameField::playerTwo->getFieldCount());
 
     GameField::playerOneCountBar = std::move(playerOneBar);

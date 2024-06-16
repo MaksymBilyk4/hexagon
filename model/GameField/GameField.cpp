@@ -383,6 +383,7 @@ auto GameField::eatEnemy(Hexagon *clickedHex) -> void {
 
 auto GameField::finishGame(bool buildDialog) -> void {
     auto winner = currentMovePlayer == Player::FIRST ? FieldState::PLAYER_TWO : FieldState::PLAYER_ONE;
+    GameStatistic::winner = winner == FieldState::PLAYER_ONE ? Player::FIRST : Player::SECOND;
     auto winnerString = winner == FieldState::PLAYER_ONE ? "Winner: Player One" : "Winner: Player Two";
     auto playerOneColor = playerOne->getPlayerColor();
     auto playerTwoColor = playerTwo->getPlayerColor();
@@ -404,9 +405,11 @@ auto GameField::finishGame(bool buildDialog) -> void {
 
     if (winner == FieldState::PLAYER_ONE) {
         playerOneCountBar->setCountedItems(58);
+        playerTwoCountBar->setCountedItems(0);
         movePlayerLabel->setColor(playerOneColor);
     } else {
         playerTwoCountBar->setCountedItems(58);
+        playerOneCountBar->setCountedItems(0);
         movePlayerLabel->setColor(playerTwoColor);
     }
 

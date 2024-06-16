@@ -12,8 +12,8 @@ auto GameStatistic::resetGameStatistic() -> void {
     GameField::movePlayerLabel->setColor(GameField::playerOne->getPlayerColor());
     GameField::freeSpaceLabel->setText("Free Space Left: 58");
 
-    GameField::playerOneCountBar->setCountedItems(3);
-    GameField::playerTwoCountBar->setCountedItems(3);
+    GameField::playerOneCountBar->reset(1350);
+    GameField::playerTwoCountBar->reset(1350);
 
     gameMode = GameMode::PLAYER_VS_COMPUTER;
 

@@ -177,6 +177,7 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
     GameField::currentLoadedGame = filename;
     fmt::println("HERE IS IT {}", GameField::currentLoadedGame);
     if (playerOneFigures == 58 || playerTwoFigures == 58) {
+        GameStatistic::winner = playerOneFigures == 58 ? Player::FIRST : Player::SECOND;
         GameField::finishGame(false);
     }
 
