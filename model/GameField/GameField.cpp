@@ -414,7 +414,10 @@ auto GameField::finishGame(bool buildDialog) -> void {
     movePlayerLabel->setText(winnerString);
     isGameFinished = true;
 
-    if (GameStatistic::stepsDone <= 20 || GameStatistic::stepsDone >= 100) GameFileStore::saveNewGame("", SaveMode::BEST_GAME);
+    if (!GameField::currentLoadedGame.starts_with(Path::BEST_GAME_SAVE_PATH)) {
+        fmt::println("{} path {}", GameField::currentLoadedGame, Path::BEST_GAME_SAVE_PATH);
+        if (GameStatistic::stepsDone <= 20 || GameStatistic::stepsDone >= 100) GameFileStore::saveNewGame("", SaveMode::BEST_GAME);
+    }
 
     if (buildDialog) {
         GameInfoLayoutBuilder::buildFinishedGameInfo();

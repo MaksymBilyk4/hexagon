@@ -2,7 +2,6 @@
 
 
 auto GameFileStore::saveNewGame(std::string const& filename, SaveMode const& saveMode) -> void {
-
     auto gameIdSavePath = saveMode == SaveMode::SAVE_BY_USER ? Path::NEXT_GAME_TO_SAVE_PATH : Path::NEXT_BEST_GAME_TO_SAVE_PATH;
 
     auto gameId = std::string();
@@ -60,7 +59,7 @@ auto GameFileStore::saveNewGame(std::string const& filename, SaveMode const& sav
 }
 
 auto GameFileStore::saveOldGame(const std::string &loadedGameNumber) -> void {
-
+    fmt::println("invoked");
     auto loadedGameFile = std::fstream(loadedGameNumber, std::ios::out | std::ios::trunc);
     loadedGameFile << std::to_string(static_cast<int>(GameField::currentMovePlayer)) << "\n";
     loadedGameFile << GameStatistic::stepsDone << "\n";
@@ -175,9 +174,10 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
     GameField::printStateMatrix();
     GameStatistic::printStatistic();
 
+    GameField::currentLoadedGame = filename;
+    fmt::println("HERE IS IT {}", GameField::currentLoadedGame);
     if (playerOneFigures == 58 || playerTwoFigures == 58) {
         GameField::finishGame(false);
     }
 
-    GameField::currentLoadedGame = filename;
 }

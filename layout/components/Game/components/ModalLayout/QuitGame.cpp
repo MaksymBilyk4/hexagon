@@ -67,7 +67,9 @@ auto QuitGame::buildQuitGameLayout(sf::RenderWindow &renderWindow) -> void {
 
     yesSaveBtn->bindOnClick([]() -> void {
         if (!GameField::currentLoadedGame.empty()) {
-            GameFileStore::saveOldGame(GameField::currentLoadedGame);
+            if (!GameField::currentLoadedGame.starts_with(Path::BEST_GAME_SAVE_PATH)) {
+                GameFileStore::saveOldGame(GameField::currentLoadedGame);
+            }
             GameField::resetGameState();
             GameLayoutBuilder::unbuild();
             HomeLayoutBuilder::build();
@@ -86,7 +88,6 @@ auto QuitGame::buildQuitGameLayout(sf::RenderWindow &renderWindow) -> void {
     auto confirmButton = std::make_unique<Button>(sf::Vector2f(750, 450), sf::Vector2f(150, 40), "Save file");
     confirmButton->bindOnClick([&disableFileSaving]() -> void {
         GameFileStore::saveNewGame(textField->getContent(), SaveMode::SAVE_BY_USER);
-        fmt::println("wrote content by user: {}", textField->getContent());
         disableFileSaving();
         GameField::resetGameState();
         GameLayoutBuilder::unbuild();

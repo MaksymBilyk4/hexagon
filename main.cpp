@@ -19,7 +19,7 @@
 
 
 int main() {
-    auto window = sf::RenderWindow(sf::VideoMode(1400, 1000), "Hexxagon", sf::Style::Default);
+    auto window = sf::RenderWindow(sf::VideoMode(1400, 1000), "Hexxagon", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
 
     auto fontHolder = FontHolder();

@@ -60,7 +60,6 @@ add_executable(hexagon main.cpp
         layout/components/TextField/TextField.cpp
         util/game/SaveMode.hpp
 )
-add_executable(deb debug.cpp)
+
 target_link_libraries(hexagon sfml-graphics)
 target_link_libraries(hexagon fmt)
-target_link_libraries(deb fmt)

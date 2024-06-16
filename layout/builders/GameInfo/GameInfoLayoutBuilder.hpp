@@ -26,6 +26,8 @@ struct GameInfoLayoutBuilder {
 
     static auto buildFinishedGameInfo() -> void;
 
+    static auto renderInfoButtons(std::string const& path) -> void;
+
     static std::vector<std::unique_ptr<Component>> buttons;
 
     static bool gameFinishedModalOpen;

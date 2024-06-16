@@ -53,6 +53,8 @@ auto GameInfoLayoutBuilder::buildBestGames() -> void {
         HomeLayoutBuilder::build();
     });
 
+    renderInfoButtons(Path::BEST_GAME_SAVE_PATH);
+
 }
 
 auto GameInfoLayoutBuilder::buildSavedGames() -> void {
@@ -71,8 +73,11 @@ auto GameInfoLayoutBuilder::buildSavedGames() -> void {
         HomeLayoutBuilder::build();
     });
 
-    auto path = std::filesystem::path(Path::GAME_SAVE_PATH);
+    renderInfoButtons(Path::GAME_SAVE_PATH);
 
+}
+
+auto GameInfoLayoutBuilder::renderInfoButtons(const std::string &path) -> void {
     auto games = std::vector<std::filesystem::path>();
 
     for (auto const& entry : std::filesystem::directory_iterator(path)) {
