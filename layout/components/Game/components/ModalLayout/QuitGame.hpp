@@ -14,6 +14,7 @@
 #include "../../../../builders/GameLayoutBuilder.hpp"
 
 #include "../../../TextField/TextField.hpp"
+#include "../../../../../util/game/SaveMode.hpp"
 
 struct QuitGame {
 

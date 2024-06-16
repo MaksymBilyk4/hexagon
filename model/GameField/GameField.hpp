@@ -38,8 +38,6 @@ struct GameField {
 
     static auto finishGame(bool buildDialog) -> void;
 
-    static auto canMoveTo(int fromRow, int toRow, int fromCol, int toCol) -> bool;
-
     static auto resetGameState() -> void;
 
     static auto printFieldMatrix() -> void;

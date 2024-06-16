@@ -210,7 +210,6 @@ auto GameField::changePlayer() -> void {
 
     if (availableSteps == 0) finishGame(true);
 
-
     if (GameStatistic::gameMode == GameMode::PLAYER_VS_COMPUTER && currentMovePlayer == Player::SECOND) botStep();
 }
 
@@ -332,51 +331,6 @@ auto GameField::getEatEnemies(int row, int col) -> int {
     return enemies;
 }
 
-auto GameField::canMoveTo(int fromRow, int toRow, int fromCol, int toCol) -> bool {
-    auto absRowDifference = std::abs(fromRow - toRow);
-    auto absColDifference = std::abs(fromCol - toCol);
-
-    if (absRowDifference > 2 || absColDifference > 2) return false;
-
-    auto rowDifference = fromRow - toRow;
-    auto colDifference = fromCol - toCol;
-
-
-    if (fromCol == 3 ) {
-        if (rowDifference == 2 && colDifference < 0) return false;
-        if (rowDifference == -1 && colDifference > 1) return false;
-        if (rowDifference == -2 && (colDifference > 0 || colDifference < -1)) return false;
-    }
-
-    if (fromCol == 5) {
-        if (rowDifference == 2 && colDifference > 0) return false;
-        if (rowDifference == -1 && colDifference < -1) return false;
-        if (rowDifference == -2 && (colDifference < 0 || colDifference > 1)) return false;
-    }
-
-    if (fromCol < 4) {
-        if (rowDifference == 2 && colDifference < 0) return false;
-        if (rowDifference == 1 && colDifference < -1) return false;
-        if (rowDifference == -1 &&colDifference > 1) return false;
-        if (rowDifference == -2 && colDifference > 0) return false;
-    }
-
-    if (fromCol > 5) {
-        if (rowDifference == 2 && colDifference > 0) return false;
-        if (rowDifference == 1 && colDifference > 1) return false;
-        if (rowDifference == -1 && colDifference < -1) return false;
-        if (rowDifference == 02 && colDifference < 0) return false;
-    }
-
-
-    if (fromCol == 4) {
-        if (rowDifference == -1 && absColDifference > 1) return false;
-        if (rowDifference == -2 && colDifference != 0) return false;
-    }
-
-    return true;
-}
-
 auto GameField::eatEnemy(Hexagon *clickedHex) -> void {
     auto clickedRow = clickedHex->getFieldRow();
     auto clickedCol = clickedHex->getFieldCol();
@@ -448,8 +402,6 @@ auto GameField::finishGame(bool buildDialog) -> void {
         }
     }
 
-
-
     if (winner == FieldState::PLAYER_ONE) {
         playerOneCountBar->setCountedItems(58);
         movePlayerLabel->setColor(playerOneColor);
@@ -461,6 +413,8 @@ auto GameField::finishGame(bool buildDialog) -> void {
     freeSpaceLabel->setText("Free space left: 0");
     movePlayerLabel->setText(winnerString);
     isGameFinished = true;
+
+    if (GameStatistic::stepsDone <= 20 || GameStatistic::stepsDone >= 100) GameFileStore::saveNewGame("", SaveMode::BEST_GAME);
 
     if (buildDialog) {
         GameInfoLayoutBuilder::buildFinishedGameInfo();
@@ -616,6 +570,8 @@ auto GameField::resetGameState() -> void {
     GameStatistic::resetGameStatistic();
     GameLayoutBuilder::initDefaultPlayersPositions();
 }
+
+// DEBUG ============================================================================================================
 
 auto GameField::printFieldMatrix() -> void {
     const int columnWidth = 8;

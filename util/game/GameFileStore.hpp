@@ -11,15 +11,14 @@
 #include "../../layout/builders/GameLayoutBuilder.hpp"
 #include "../../model/GameField/GameField.hpp"
 #include "./Path.hpp"
+#include "./SaveMode.hpp"
 
 struct GameFileStore {
 
-    static auto saveNewGame(std::string const& filename) -> void;
+    static auto saveNewGame(std::string const& filename, SaveMode const& saveMode) -> void;
 
     static auto saveOldGame(const std::string &loadedGameNumber) -> void;
 
     static auto uploadGame(std::string const& filename) -> void;
-
-    static auto getGameNumber(std::string const& filename) -> std::string;
 
 };

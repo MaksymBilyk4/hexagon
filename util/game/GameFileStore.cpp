@@ -1,21 +1,31 @@
 #include "./GameFileStore.hpp"
 
 
-auto GameFileStore::saveNewGame(std::string const& filename) -> void {
+auto GameFileStore::saveNewGame(std::string const& filename, SaveMode const& saveMode) -> void {
 
-    auto lastGameId = std::string();
-    auto lastGameIdFile = std::fstream(
-            Path::NEXT_GAME_TO_SAVE_PATH,
+    auto gameIdSavePath = saveMode == SaveMode::SAVE_BY_USER ? Path::NEXT_GAME_TO_SAVE_PATH : Path::NEXT_BEST_GAME_TO_SAVE_PATH;
+
+    auto gameId = std::string();
+    auto idFileStream = std::fstream(
+            gameIdSavePath,
             std::ios::in);
-    lastGameIdFile >> lastGameId;
-    lastGameIdFile.close();
 
-    auto savedGameFileName = std::string(Path::GAME_SAVE_PATH);
+    idFileStream >> gameId;
+    idFileStream.close();
 
-    if (filename.empty()) savedGameFileName += "/game_" + lastGameId + ".txt";
-    else {
-        if (filename.ends_with(".txt")) savedGameFileName += "/" + filename;
-        else savedGameFileName += "/" + filename + ".txt";
+    auto savedGameFileName = saveMode == SaveMode::SAVE_BY_USER ? std::string(Path::GAME_SAVE_PATH) : std::string(Path::BEST_GAME_SAVE_PATH);
+
+    if (saveMode == SaveMode::SAVE_BY_USER) {
+        if (filename.empty()) savedGameFileName += "/game_" + gameId + ".txt";
+        else {
+            if (filename.ends_with(".txt")) savedGameFileName += "/" + filename;
+            else savedGameFileName += "/" + filename + ".txt";
+        }
+    } else {
+        auto gameSpeedId = std::string();
+        if (GameStatistic::stepsDone <= 20) gameSpeedId = "fast";
+        else if(GameStatistic::stepsDone >= 100) gameSpeedId = "long";
+        savedGameFileName += "/" + gameSpeedId + "_best_game" + gameId + ".txt";
     }
 
     auto savedGame = std::ofstream(savedGameFileName, std::ios::out | std::ios::trunc);
@@ -41,30 +51,17 @@ auto GameFileStore::saveNewGame(std::string const& filename) -> void {
 
 
     if (filename.empty()) {
-        lastGameIdFile = std::fstream(
-                Path::NEXT_GAME_TO_SAVE_PATH,
+        idFileStream = std::fstream(
+                gameIdSavePath,
                 std::ios::out | std::ios::trunc);
-        lastGameIdFile << std::to_string(std::stoi(lastGameId) + 1);
+        idFileStream << std::to_string(std::stoi(gameId) + 1);
     }
 
 }
 
 auto GameFileStore::saveOldGame(const std::string &loadedGameNumber) -> void {
 
-    auto path = std::filesystem::path(Path::GAME_SAVE_PATH);
-
-    auto filename = std::string();
-    auto gameNumber = std::string();
-
-    for (auto const& entry : std::filesystem::directory_iterator(path)) {
-        gameNumber = GameFileStore::getGameNumber(entry.path().string());
-        if (gameNumber == loadedGameNumber) {
-            filename = entry.path().string();
-            break;
-        };
-    }
-
-    auto loadedGameFile = std::fstream(filename, std::ios::out | std::ios::trunc);
+    auto loadedGameFile = std::fstream(loadedGameNumber, std::ios::out | std::ios::trunc);
     loadedGameFile << std::to_string(static_cast<int>(GameField::currentMovePlayer)) << "\n";
     loadedGameFile << GameStatistic::stepsDone << "\n";
     loadedGameFile << GameStatistic::allFiguresEaten << "\n";
@@ -97,7 +94,6 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
         figureRow.resize(9);
 
 
-//    savedGameFile >> lastMovePlayer;
     getline(savedGameFile, lastMovePlayer);
 
     auto doneSteps = std::string();
@@ -183,16 +179,5 @@ auto GameFileStore::uploadGame(std::string const& filename ) -> void {
         GameField::finishGame(false);
     }
 
-
-    auto loadedGame = GameFileStore::getGameNumber(filename);
-    GameField::currentLoadedGame = loadedGame;
-}
-
-auto GameFileStore::getGameNumber(std::string const& filename) -> std::string {
-    auto gameNumber = std::string();
-
-    for (char ch : filename)
-        if (ch >= '0' && ch <= '9') gameNumber += ch;
-
-    return gameNumber;
+    GameField::currentLoadedGame = filename;
 }

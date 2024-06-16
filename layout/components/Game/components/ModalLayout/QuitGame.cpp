@@ -85,7 +85,7 @@ auto QuitGame::buildQuitGameLayout(sf::RenderWindow &renderWindow) -> void {
 
     auto confirmButton = std::make_unique<Button>(sf::Vector2f(750, 450), sf::Vector2f(150, 40), "Save file");
     confirmButton->bindOnClick([&disableFileSaving]() -> void {
-        GameFileStore::saveNewGame(textField->getContent());
+        GameFileStore::saveNewGame(textField->getContent(), SaveMode::SAVE_BY_USER);
         fmt::println("wrote content by user: {}", textField->getContent());
         disableFileSaving();
         GameField::resetGameState();

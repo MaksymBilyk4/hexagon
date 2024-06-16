@@ -58,6 +58,7 @@ add_executable(hexagon main.cpp
         model/GameField/BotMoveData.cpp
         layout/components/Game/components/ModalLayout/QuitGame.cpp
         layout/components/TextField/TextField.cpp
+        util/game/SaveMode.hpp
 )
 add_executable(deb debug.cpp)
 target_link_libraries(hexagon sfml-graphics)
